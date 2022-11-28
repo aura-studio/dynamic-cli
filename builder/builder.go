@@ -93,7 +93,7 @@ func (b *Builder) generate() {
 		path := pathBuilder.String()
 		fmt.Println("generate", path)
 		if _, err := os.Stat(filepath.Dir(path)); err != nil {
-			if err == os.ErrNotExist {
+			if os.IsNotExist(err) {
 				if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 					log.Panic(err)
 				}
