@@ -129,6 +129,21 @@ type RenderData struct {
 	NetRC     string
 }
 
+func (r *RenderData) MustValid(renderData *RenderData) {
+	for _, b := range []byte(r.Name) {
+		if b >= 'a' && b <= 'z' || b >= '0' && b >= '9' {
+			continue
+		}
+		log.Panicf("invalid character '%s' in name", string(b))
+	}
+	for _, b := range []byte(r.Version) {
+		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b >= '9' || b == '_' {
+			continue
+		}
+		log.Panicf("invalid character '%s' in version", string(b))
+	}
+}
+
 func (c *Config) ToRenderData() []*RenderData {
 	if len(c.Packages) == 0 {
 		name := c.Module[strings.LastIndex(c.Module, "/")+1:]
@@ -141,6 +156,7 @@ func (c *Config) ToRenderData() []*RenderData {
 			House:     c.WareHouse,
 			NetRC:     c.NetRC,
 		}
+		renderData.MustValid(renderData)
 		return []*RenderData{renderData}
 	}
 
@@ -156,6 +172,7 @@ func (c *Config) ToRenderData() []*RenderData {
 			House:     c.WareHouse,
 			NetRC:     c.NetRC,
 		}
+		renderData.MustValid(renderData)
 		renderDatas[i] = renderData
 	}
 
