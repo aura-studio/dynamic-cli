@@ -19,7 +19,7 @@ type Config struct {
 
 var DefaultConfig = Config{
 	GoVer:     "1.18",
-	WareHouse: "/opt/go-dynamic-warehouse",
+	WareHouse: "/tmp/warehouse",
 }
 
 // ParseRemote parses a remote string into struct
