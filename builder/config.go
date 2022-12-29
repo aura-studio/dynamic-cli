@@ -122,13 +122,14 @@ func BuildFromJSONPath(path string) {
 }
 
 type RenderData struct {
-	Name      string
-	Version   string
-	Package   string
-	Module    string
-	House     string
-	GoVersion string
-	NetRC     string
+	Name        string
+	Version     string
+	Package     string
+	PackagePath string
+	Module      string
+	House       string
+	GoVersion   string
+	NetRC       string
 }
 
 func (r *RenderData) MustValid(renderData *RenderData) {
@@ -148,18 +149,20 @@ func (r *RenderData) MustValid(renderData *RenderData) {
 
 func (c *Config) ToRenderData() []*RenderData {
 	if len(c.Packages) == 0 {
-		name := c.Module[strings.LastIndex(c.Module, "/")+1:]
+		pkg := c.Module[strings.LastIndex(c.Module, "/")+1:]
+		name := pkg
 		if len(c.Namespace) > 0 {
-			name = strings.Join([]string{c.Namespace, name}, "_")
+			name = strings.Join([]string{c.Namespace, pkg}, "_")
 		}
 		renderData := &RenderData{
-			GoVersion: c.GoVer,
-			Name:      name,
-			Version:   c.Commit,
-			Package:   c.Module,
-			Module:    c.Module,
-			House:     c.WareHouse,
-			NetRC:     c.NetRC,
+			GoVersion:   c.GoVer,
+			Name:        name,
+			Version:     c.Commit,
+			Package:     pkg,
+			PackagePath: c.Module,
+			Module:      c.Module,
+			House:       c.WareHouse,
+			NetRC:       c.NetRC,
 		}
 		renderData.MustValid(renderData)
 		return []*RenderData{renderData}
@@ -172,13 +175,14 @@ func (c *Config) ToRenderData() []*RenderData {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
 		renderData := &RenderData{
-			GoVersion: c.GoVer,
-			Name:      name,
-			Version:   c.Commit,
-			Package:   strings.Join([]string{c.Module, pkg}, "/"),
-			Module:    c.Module,
-			House:     c.WareHouse,
-			NetRC:     c.NetRC,
+			GoVersion:   c.GoVer,
+			Name:        name,
+			Version:     c.Commit,
+			Package:     pkg,
+			PackagePath: strings.Join([]string{c.Module, pkg}, "/"),
+			Module:      c.Module,
+			House:       c.WareHouse,
+			NetRC:       c.NetRC,
 		}
 		renderData.MustValid(renderData)
 		renderDatas[i] = renderData
