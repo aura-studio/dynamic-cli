@@ -125,7 +125,7 @@ type RenderData struct {
 	Name        string
 	Version     string
 	Package     string
-	PackagePath string
+	FullPackage string
 	Module      string
 	House       string
 	GoVersion   string
@@ -159,7 +159,7 @@ func (c *Config) ToRenderData() []*RenderData {
 			Name:        name,
 			Version:     c.Commit,
 			Package:     pkg,
-			PackagePath: c.Module,
+			FullPackage: c.Module,
 			Module:      c.Module,
 			House:       c.WareHouse,
 			NetRC:       c.NetRC,
@@ -179,7 +179,7 @@ func (c *Config) ToRenderData() []*RenderData {
 			Name:        name,
 			Version:     c.Commit,
 			Package:     pkg,
-			PackagePath: strings.Join([]string{c.Module, pkg}, "/"),
+			FullPackage: strings.Join([]string{c.Module, pkg}, "/"),
 			Module:      c.Module,
 			House:       c.WareHouse,
 			NetRC:       c.NetRC,

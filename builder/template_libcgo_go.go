@@ -10,10 +10,10 @@ import "C"
 import (
 	"unsafe"
 
-	"{{.Package}}"
+	"{{.FullPackage}}"
 )
 
-var tunnel = {{.Name}}.Tunnel
+var tunnel = {{.Package}}.Tunnel
 
 //export dynamic_cgo_{{.Name}}_{{.Version}}_init
 func dynamic_cgo_{{.Name}}_{{.Version}}_init() {
