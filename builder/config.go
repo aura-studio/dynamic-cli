@@ -134,7 +134,7 @@ type RenderData struct {
 
 func (r *RenderData) MustValid(renderData *RenderData) {
 	for _, b := range []byte(r.Name) {
-		if b >= 'a' && b <= 'z' || b >= '0' && b <= '9' {
+		if b >= 'a' && b <= 'z' || b >= '0' && b <= '9' || b == '_' {
 			continue
 		}
 		log.Panicf("invalid character '%s' in name", string(b))
