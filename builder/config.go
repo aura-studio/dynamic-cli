@@ -11,6 +11,7 @@ import (
 type Config struct {
 	GoVer     string   `json:"gover"`
 	Module    string   `json:"module"`
+	Namespace string   `json:"namespace"`
 	Commit    string   `json:"commit"`
 	Packages  []string `json:"packages"`
 	WareHouse string   `json:"warehouse"`
@@ -31,6 +32,7 @@ func ParseRemote(remote string, packages ...string) []Config {
 	config := Config{
 		GoVer:     DefaultConfig.GoVer,
 		Module:    mod,
+		Namespace: "",
 		Commit:    commit,
 		Packages:  packages,
 		WareHouse: DefaultConfig.WareHouse,
@@ -147,6 +149,9 @@ func (r *RenderData) MustValid(renderData *RenderData) {
 func (c *Config) ToRenderData() []*RenderData {
 	if len(c.Packages) == 0 {
 		name := c.Module[strings.LastIndex(c.Module, "/")+1:]
+		if len(c.Namespace) > 0 {
+			name = strings.Join([]string{c.Namespace, name}, "_")
+		}
 		renderData := &RenderData{
 			GoVersion: c.GoVer,
 			Name:      name,
@@ -163,6 +168,9 @@ func (c *Config) ToRenderData() []*RenderData {
 	renderDatas := make([]*RenderData, len(c.Packages))
 	for i, pkg := range c.Packages {
 		name := pkg[strings.LastIndex(pkg, "/")+1:]
+		if len(c.Namespace) > 0 {
+			name = strings.Join([]string{c.Namespace, name}, "_")
+		}
 		renderData := &RenderData{
 			GoVersion: c.GoVer,
 			Name:      name,
