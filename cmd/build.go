@@ -43,7 +43,7 @@ to quickly create a Cobra application.`,
 
 		if len(args) > 0 {
 			if strings.Contains(args[0], "@") {
-				builder.BuildFromRemote(args[0], args[1:]...)
+				builder.BuildFromRepo(args[0], args[1:]...)
 				return
 			} else {
 				builder.BuildFromJSONPath(args[0])

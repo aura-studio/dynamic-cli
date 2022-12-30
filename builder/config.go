@@ -2,9 +2,9 @@ package builder
 
 import "github.com/aura-studio/dynamic-cli/config"
 
-// BuildFromRemote builds a package from remote
-func BuildFromRemote(remote string, packages ...string) {
-	configs := config.ParseRemote(remote, packages...)
+// BuildFromRepo builds a package from remote
+func BuildFromRepo(repo string, packages ...string) {
+	configs := config.ParseRepo(repo, packages...)
 	for _, config := range configs {
 		renderDatas := ConfigToRenderData(config)
 		for _, renderData := range renderDatas {

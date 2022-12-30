@@ -37,9 +37,9 @@ func SetDefaultDebug(debug bool) {
 	DefaultConfig.Debug = debug
 }
 
-// ParseRemote parses a remote string into struct
+// ParseRepo parses a remote string into struct
 // example: github.com/aura-studio/dynamic-cli/builder@af3e5e21
-func ParseRemote(remote string, packages ...string) []Config {
+func ParseRepo(remote string, packages ...string) []Config {
 	strs := strings.Split(remote, "@")
 	mod := strs[0]
 	commit := strs[1]
