@@ -1,30 +1,41 @@
 package pusher
 
-import "github.com/aura-studio/dynamic-cli/config"
+import (
+	"github.com/aura-studio/dynamic-cli/config"
+)
 
-func PushFromRepo(repo string, packages ...string) {
+// PushFromRepo pushes a package from repo
+func PushFromRepo(remotes []string, repo string, packages ...string) {
 	configs := config.ParseRepo(repo, packages...)
 	for _, config := range configs {
-		
+		fileList := NewTaskList(remotes, config)
+		New(fileList).Push()
 	}
 }
 
-// // BuildFromJSONFile builds a package from json file
-func PushFromJSONFile(path string) {
+// PushFromJSON pushes a package from json string
+func PushFromJSON(remotes []string, str string) {
+	configs := config.ParseJSON(str)
+	for _, config := range configs {
+		fileList := NewTaskList(remotes, config)
+		New(fileList).Push()
+	}
+}
+
+// BuildFromJSONFile pushes a package from json file
+func PushFromJSONFile(remotes []string, path string) {
 	configs := config.ParseJSONFile(path)
 	for _, config := range configs {
-		// renderDatas := config.ToRenderData()
-		// for _, renderData := range renderDatas {
-		// 	New(renderData).Build()
-		// }
+		fileList := NewTaskList(remotes, config)
+		New(fileList).Push()
 	}
 }
 
-// // ParseJSONPath parses a json path into struct
-// func ParseJSONPath(path string) []Config {
-// 	data, err := os.ReadFile(filepath.Join(path, "dynamic.json"))
-// 	if err != nil {
-// 		log.Panic(err)
-// 	}
-// 	return ParseJSON(string(data))
-// }
+// BuildFromJSONPath pushes a package from json path
+func PushFromJSONPath(remotes []string, path string) {
+	configs := config.ParseJSONPath(path)
+	for _, config := range configs {
+		fileList := NewTaskList(remotes, config)
+		New(fileList).Push()
+	}
+}
