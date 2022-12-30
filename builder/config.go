@@ -11,6 +11,7 @@ import (
 type Config struct {
 	GoVer     string   `json:"gover"`
 	Module    string   `json:"module"`
+	Release   string   `json:"release"`
 	Namespace string   `json:"namespace"`
 	Commit    string   `json:"commit"`
 	Packages  []string `json:"packages"`
@@ -21,6 +22,7 @@ type Config struct {
 var DefaultConfig = Config{
 	GoVer:     "1.18",
 	WareHouse: "/tmp/warehouse",
+	Release:   "true",
 }
 
 // ParseRemote parses a remote string into struct
@@ -65,6 +67,9 @@ func ParseJSON(str string) []Config {
 		}
 		if configs[i].WareHouse == "" {
 			configs[i].WareHouse = DefaultConfig.WareHouse
+		}
+		if configs[i].Release == "" {
+			configs[i].Release = DefaultConfig.Release
 		}
 	}
 	return configs
@@ -130,6 +135,7 @@ type RenderData struct {
 	House       string
 	GoVersion   string
 	NetRC       string
+	BuildFlags  string
 }
 
 func (r *RenderData) MustValid(renderData *RenderData) {
@@ -148,6 +154,11 @@ func (r *RenderData) MustValid(renderData *RenderData) {
 }
 
 func (c *Config) ToRenderData() []*RenderData {
+	buildFlags := ""
+	if c.Release == "true" {
+		buildFlags += "-ldflags='-s -w'"
+	}
+
 	if len(c.Packages) == 0 {
 		pkg := c.Module[strings.LastIndex(c.Module, "/")+1:]
 		name := pkg
@@ -163,6 +174,7 @@ func (c *Config) ToRenderData() []*RenderData {
 			Module:      c.Module,
 			House:       c.WareHouse,
 			NetRC:       c.NetRC,
+			BuildFlags:  buildFlags,
 		}
 		renderData.MustValid(renderData)
 		return []*RenderData{renderData}
@@ -183,6 +195,7 @@ func (c *Config) ToRenderData() []*RenderData {
 			Module:      c.Module,
 			House:       c.WareHouse,
 			NetRC:       c.NetRC,
+			BuildFlags:  buildFlags,
 		}
 		renderData.MustValid(renderData)
 		renderDatas[i] = renderData
