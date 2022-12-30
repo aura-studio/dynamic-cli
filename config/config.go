@@ -17,6 +17,7 @@ type Config struct {
 	Packages  []string `json:"packages"`
 	WareHouse string   `json:"warehouse"`
 	NetRC     string   `json:"netrc"`
+	Remotes   []string `json:"remotes"`
 }
 
 var DefaultConfig = Config{
