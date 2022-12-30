@@ -64,5 +64,5 @@ func init() {
 	buildCmd.Flags().StringP("path", "p", "", "path of directory of dynamic.json")
 	buildCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
 	buildCmd.Flags().StringP("gover", "g", "", "version of golang")
-	buildCmd.Flags().BoolP("debug", "d", true, "build debug version")
+	buildCmd.Flags().BoolP("debug", "d", false, "build debug version")
 }
