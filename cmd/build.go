@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/builder"
+	"github.com/aura-studio/dynamic-cli/config"
 	"github.com/spf13/cobra"
 )
 
@@ -25,19 +26,19 @@ to quickly create a Cobra application.`,
 		if warehouse, err := cmd.Flags().GetString("warehouse"); err != nil {
 			log.Panic(err)
 		} else if warehouse != "" {
-			builder.DefaultConfig.WareHouse = warehouse
+			config.SetDefaultWareHouse(warehouse)
 		}
 
 		if gover, err := cmd.Flags().GetString("gover"); err != nil {
 			log.Panic(err)
 		} else if gover != "" {
-			builder.DefaultConfig.GoVer = gover
+			config.SetDefaultGoVer(gover)
 		}
 
 		if debug, err := cmd.Flags().GetBool("debug"); err != nil {
 			log.Panic(err)
 		} else if debug {
-			builder.DefaultConfig.Debug = debug
+			config.SetDefaultDebug(debug)
 		}
 
 		if len(args) > 0 {
@@ -46,38 +47,31 @@ to quickly create a Cobra application.`,
 				return
 			} else {
 				builder.BuildFromJSONPath(args[0])
+				return
 			}
 		}
-		if config, err := cmd.Flags().GetString("config"); err != nil {
+
+		if file, err := cmd.Flags().GetString("file"); err != nil {
 			log.Panic(err)
-		} else if config != "" {
-			builder.BuildFromJSONFile(cmd.Flag("config").Value.String())
+		} else if file != "" {
+			builder.BuildFromJSONFile(file)
+			return
 		}
 
-		if path, err := cmd.Flags().GetString("path"); err != nil {
+		if dir, err := cmd.Flags().GetString("dir"); err != nil {
 			log.Panic(err)
-		} else if path != "" {
-			builder.BuildFromJSONPath(cmd.Flag("path").Value.String())
+		} else if dir != "" {
+			builder.BuildFromJSONPath(dir)
+			return
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(buildCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// buildCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// buildCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-	buildCmd.Flags().StringP("config", "c", "", "path of config file")
-	buildCmd.Flags().StringP("path", "p", "", "path of directory of dynamic.json")
+	buildCmd.Flags().StringP("file", "f", "", "path of config file")
+	buildCmd.Flags().StringP("dir", "d", "", "path of config dir")
 	buildCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
-	buildCmd.Flags().StringP("gover", "g", "", "version of golang")
-	buildCmd.Flags().BoolP("debug", "d", false, "build debug version")
+	buildCmd.Flags().StringP("gover", "v", "", "version of golang")
+	buildCmd.Flags().BoolP("debug", "g", false, "build debug version")
 }
