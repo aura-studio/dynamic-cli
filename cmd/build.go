@@ -4,6 +4,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"log"
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/builder"
@@ -21,15 +22,24 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if cmd.Flag("warehouse").Value.String() != "" {
-			builder.DefaultConfig.WareHouse = cmd.Flag("warehouse").Value.String()
+		if warehouse, err := cmd.Flags().GetString("warehouse"); err != nil {
+			log.Panic(err)
+		} else if warehouse != "" {
+			builder.DefaultConfig.WareHouse = warehouse
 		}
-		if cmd.Flag("gover").Value.String() != "" {
-			builder.DefaultConfig.GoVer = cmd.Flag("gover").Value.String()
+
+		if gover, err := cmd.Flags().GetString("gover"); err != nil {
+			log.Panic(err)
+		} else if gover != "" {
+			builder.DefaultConfig.GoVer = gover
 		}
-		if cmd.Flag("debug").Value.String() != "" {
-			builder.DefaultConfig.Debug = cmd.Flag("debug").Value.String()
+
+		if debug, err := cmd.Flags().GetBool("debug"); err != nil {
+			log.Panic(err)
+		} else if debug {
+			builder.DefaultConfig.Debug = debug
 		}
+
 		if len(args) > 0 {
 			if strings.Contains(args[0], "@") {
 				builder.BuildFromRemote(args[0], args[1:]...)
@@ -38,10 +48,15 @@ to quickly create a Cobra application.`,
 				builder.BuildFromJSONPath(args[0])
 			}
 		}
-		if cmd.Flag("config").Value.String() != "" {
+		if config, err := cmd.Flags().GetString("config"); err != nil {
+			log.Panic(err)
+		} else if config != "" {
 			builder.BuildFromJSONFile(cmd.Flag("config").Value.String())
 		}
-		if cmd.Flag("path").Value.String() != "" {
+
+		if path, err := cmd.Flags().GetString("path"); err != nil {
+			log.Panic(err)
+		} else if path != "" {
 			builder.BuildFromJSONPath(cmd.Flag("path").Value.String())
 		}
 	},
