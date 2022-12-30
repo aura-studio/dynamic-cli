@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -35,8 +34,8 @@ func New(c *RenderData) *Builder {
 }
 
 func (b *Builder) Build() {
-	fmt.Println("start...")
-	defer fmt.Println("done!")
+	log.Println("start...")
+	defer log.Println("done!")
 
 	b.bakNetRC()
 	b.writeNetRC()
@@ -48,7 +47,7 @@ func (b *Builder) Build() {
 
 // bakNetRC backup netrc file if exsits
 func (b *Builder) bakNetRC() {
-	fmt.Println("bakup", b.netRCPath)
+	log.Println("bakup", b.netRCPath)
 	if _, err := os.Stat(b.netRCPath); err == nil {
 		if err := os.Rename(b.netRCPath, b.netRCBakPath); err != nil {
 			log.Panic(err)
@@ -58,7 +57,7 @@ func (b *Builder) bakNetRC() {
 
 // writeNetRC write netrc file from Builder.config.NetRC
 func (b *Builder) writeNetRC() {
-	fmt.Println("write", b.netRCPath)
+	log.Println("write", b.netRCPath)
 	f, err := os.Create(b.netRCPath)
 	if err != nil {
 		log.Panic(err)
@@ -72,7 +71,7 @@ func (b *Builder) writeNetRC() {
 
 // restoreNetRC restore netrc file if exsits
 func (b *Builder) restoreNetRC() {
-	fmt.Println("restore", b.netRCPath)
+	log.Println("restore", b.netRCPath)
 	if _, err := os.Stat(b.netRCBakPath); err == nil {
 		if err := os.Rename(b.netRCBakPath, b.netRCPath); err != nil {
 			log.Panic(err)
@@ -91,7 +90,7 @@ func (b *Builder) generate() {
 		}
 
 		path := pathBuilder.String()
-		fmt.Println("generate", path)
+		log.Println("generate", path)
 		if _, err := os.Stat(filepath.Dir(path)); err != nil {
 			if os.IsNotExist(err) {
 				if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -138,7 +137,7 @@ func (b *Builder) runBuilder() {
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Printf("exec builder.sh\n================\n%s================\n", string(builderContent))
+	log.Printf("exec builder.sh\n================\n%s================\n", string(builderContent))
 	builderFile.Close()
 
 	if err := cmd.Run(); err != nil {
