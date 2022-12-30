@@ -34,7 +34,7 @@ func (r *RenderData) MustValid(renderData *RenderData) {
 	}
 }
 
-func ConfigToRenderData(c config.Config) []*RenderData {
+func NewRenderData(c config.Config) []*RenderData {
 	ldFlags := ""
 	if !c.Debug {
 		ldFlags += "-s -w " // need an extra space
