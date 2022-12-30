@@ -27,8 +27,8 @@ to quickly create a Cobra application.`,
 		if cmd.Flag("gover").Value.String() != "" {
 			builder.DefaultConfig.GoVer = cmd.Flag("gover").Value.String()
 		}
-		if cmd.Flag("release").Value.String() != "" {
-			builder.DefaultConfig.Release = cmd.Flag("release").Value.String()
+		if cmd.Flag("debug").Value.String() != "" {
+			builder.DefaultConfig.Debug = cmd.Flag("debug").Value.String()
 		}
 		if len(args) > 0 {
 			if strings.Contains(args[0], "@") {
@@ -64,5 +64,5 @@ func init() {
 	buildCmd.Flags().StringP("path", "p", "", "path of directory of dynamic.json")
 	buildCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
 	buildCmd.Flags().StringP("gover", "g", "", "version of golang")
-	buildCmd.Flags().BoolP("release", "r", true, "build release version")
+	buildCmd.Flags().BoolP("debug", "debug", true, "build debug version")
 }

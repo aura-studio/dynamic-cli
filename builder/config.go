@@ -11,7 +11,7 @@ import (
 type Config struct {
 	GoVer     string   `json:"gover"`
 	Module    string   `json:"module"`
-	Release   string   `json:"release"`
+	Debug     string   `json:"debug"`
 	Namespace string   `json:"namespace"`
 	Commit    string   `json:"commit"`
 	Packages  []string `json:"packages"`
@@ -22,7 +22,7 @@ type Config struct {
 var DefaultConfig = Config{
 	GoVer:     "1.18",
 	WareHouse: "/tmp/warehouse",
-	Release:   "true",
+	Debug:     "false",
 }
 
 // ParseRemote parses a remote string into struct
@@ -68,8 +68,8 @@ func ParseJSON(str string) []Config {
 		if configs[i].WareHouse == "" {
 			configs[i].WareHouse = DefaultConfig.WareHouse
 		}
-		if configs[i].Release == "" {
-			configs[i].Release = DefaultConfig.Release
+		if configs[i].Debug == "" {
+			configs[i].Debug = DefaultConfig.Debug
 		}
 	}
 	return configs
@@ -155,7 +155,7 @@ func (r *RenderData) MustValid(renderData *RenderData) {
 
 func (c *Config) ToRenderData() []*RenderData {
 	ldFlags := ""
-	if c.Release == "true" {
+	if c.Debug == "false" {
 		ldFlags += "-s -w " // need an extra space
 	}
 
