@@ -7,6 +7,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/aura-studio/dynamic-cli/config"
 	"github.com/aura-studio/dynamic-cli/pusher"
 	"github.com/spf13/cobra"
 )
@@ -22,17 +23,18 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		remotes, err := cmd.Flags().GetStringSlice("remote")
-		if err != nil {
+		if remotes, err := cmd.Flags().GetStringSlice("remote"); err != nil {
 			log.Panic(err)
+		} else if len(remotes) > 0 {
+			config.SetDefaultRemotes(remotes)
 		}
 
 		if len(args) > 0 {
 			if strings.Contains(args[0], "@") {
-				pusher.PushFromRepo(remotes, args[0], args[1:]...)
+				pusher.PushFromRepo(args[0], args[1:]...)
 				return
 			} else {
-				pusher.PushFromJSONPath(remotes, args[0])
+				pusher.PushFromJSONPath(args[0])
 				return
 			}
 		}
@@ -40,14 +42,14 @@ to quickly create a Cobra application.`,
 		if file, err := cmd.Flags().GetString("file"); err != nil {
 			log.Panic(err)
 		} else if file != "" {
-			pusher.PushFromJSONFile(remotes, file)
+			pusher.PushFromJSONFile(file)
 			return
 		}
 
 		if dir, err := cmd.Flags().GetString("dir"); err != nil {
 			log.Panic(err)
 		} else if dir != "" {
-			pusher.PushFromJSONPath(remotes, dir)
+			pusher.PushFromJSONPath(dir)
 			return
 		}
 	},

@@ -17,12 +17,14 @@ type Config struct {
 	Packages  []string `json:"packages"`
 	WareHouse string   `json:"warehouse"`
 	NetRC     string   `json:"netrc"`
+	Remotes   []string `json:"remotes"`
 }
 
 var DefaultConfig = Config{
 	GoVer:     "1.18",
 	WareHouse: "/tmp/warehouse",
 	Debug:     false,
+	Remotes:   []string{},
 }
 
 func SetDefaultGoVer(ver string) {
@@ -37,10 +39,14 @@ func SetDefaultDebug(debug bool) {
 	DefaultConfig.Debug = debug
 }
 
-// ParseRepo parses a remote string into struct
+func SetDefaultRemotes(remotes []string) {
+	DefaultConfig.Remotes = remotes
+}
+
+// ParseRepo parses a repo string into struct
 // example: github.com/aura-studio/dynamic-cli/builder@af3e5e21
-func ParseRepo(remote string, packages ...string) []Config {
-	strs := strings.Split(remote, "@")
+func ParseRepo(repo string, packages ...string) []Config {
+	strs := strings.Split(repo, "@")
 	mod := strs[0]
 	commit := strs[1]
 	config := Config{
@@ -51,6 +57,7 @@ func ParseRepo(remote string, packages ...string) []Config {
 		Packages:  packages,
 		WareHouse: DefaultConfig.WareHouse,
 		NetRC:     "",
+		Remotes:   DefaultConfig.Remotes,
 	}
 	return []Config{config}
 }
@@ -71,6 +78,9 @@ func ParseJSON(str string) []Config {
 		}
 		if configs[i].Debug {
 			configs[i].Debug = DefaultConfig.Debug
+		}
+		if len(configs[i].Remotes) == 0 {
+			configs[i].Remotes = DefaultConfig.Remotes
 		}
 	}
 	return configs

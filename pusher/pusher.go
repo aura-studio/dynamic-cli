@@ -1,6 +1,9 @@
 package pusher
 
-import "log"
+import (
+	"log"
+	"net/url"
+)
 
 type Pusher struct {
 	*TaskList
@@ -13,16 +16,23 @@ func New(taskList *TaskList) *Pusher {
 }
 
 func (p *Pusher) Push() {
-	for remote, files := range p.tasks {
-		switch remote {
-		case "s3":
-			p.pushS3(files)
-		default:
-			log.Println("Unknown remote:", remote)
-		}
+	for s, tasks := range p.Tasks {
+		p.newRemote(s).Push(tasks)
 	}
 }
 
-func (*Pusher) pushS3(files []string) {
+func (p *Pusher) newRemote(s string) Remote {
+	u, err := url.Parse(s)
+	if err != nil {
+		log.Panicf("parsing remote url error: %v", err)
+	}
 
+	switch u.Scheme {
+	case "s3":
+		return NewS3Remote(u.Host)
+	default:
+		log.Panicf("unknown remote scheme: %s", u.Scheme)
+	}
+
+	return nil
 }

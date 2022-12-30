@@ -2,20 +2,29 @@ package pusher
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/config"
 )
 
 type TaskList struct {
-	tasks map[string][]string
+	Tasks map[string][]Pair
 }
 
-func (f *TaskList) Add(remote string, file string) {
-	f.tasks[remote] = append(f.tasks[remote], file)
+type Pair struct {
+	RemoteFilePath string
+	LocalFilePath  string
 }
 
-func NewTaskList(remotes []string, c config.Config) *TaskList {
+func (f *TaskList) Add(remote string, remoteFilePath string, localFilePath string) {
+	f.Tasks[remote] = append(f.Tasks[remote], Pair{
+		RemoteFilePath: remoteFilePath,
+		LocalFilePath:  localFilePath,
+	})
+}
+
+func NewTaskList(c config.Config) *TaskList {
 	fileList := &TaskList{}
 
 	if len(c.Packages) == 0 {
@@ -27,9 +36,9 @@ func NewTaskList(remotes []string, c config.Config) *TaskList {
 		libcgo := fmt.Sprintf("%s/%s_%s/libcgo_%s_%s.so", c.WareHouse, name, c.Commit, name, c.Commit)
 		libgo := fmt.Sprintf("%s/%s_%s/libgo_%s_%s.so", c.WareHouse, name, c.Commit, name, c.Commit)
 
-		for _, remote := range remotes {
-			fileList.Add(remote, libcgo)
-			fileList.Add(remote, libgo)
+		for _, remote := range c.Remotes {
+			fileList.Add(remote, libcgo, filepath.Join(c.WareHouse, libcgo))
+			fileList.Add(remote, libgo, filepath.Join(c.WareHouse, libgo))
 		}
 		return fileList
 	}
@@ -41,9 +50,9 @@ func NewTaskList(remotes []string, c config.Config) *TaskList {
 		}
 		libcgo := fmt.Sprintf("%s/%s_%s/libcgo_%s_%s.so", c.WareHouse, name, c.Commit, name, c.Commit)
 		libgo := fmt.Sprintf("%s/%s_%s/libgo_%s_%s.so", c.WareHouse, name, c.Commit, name, c.Commit)
-		for _, remote := range remotes {
-			fileList.Add(remote, libcgo)
-			fileList.Add(remote, libgo)
+		for _, remote := range c.Remotes {
+			fileList.Add(remote, libcgo, filepath.Join(c.WareHouse, libcgo))
+			fileList.Add(remote, libgo, filepath.Join(c.WareHouse, libgo))
 		}
 	}
 
