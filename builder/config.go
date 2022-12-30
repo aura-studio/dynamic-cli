@@ -135,7 +135,7 @@ type RenderData struct {
 	House       string
 	GoVersion   string
 	NetRC       string
-	BuildFlags  string
+	LDFlags     string
 }
 
 func (r *RenderData) MustValid(renderData *RenderData) {
@@ -154,9 +154,9 @@ func (r *RenderData) MustValid(renderData *RenderData) {
 }
 
 func (c *Config) ToRenderData() []*RenderData {
-	buildFlags := ""
+	ldFlags := ""
 	if c.Release == "true" {
-		buildFlags += "-ldflags='-s -w'"
+		ldFlags += "-s -w " // need an extra space
 	}
 
 	if len(c.Packages) == 0 {
@@ -174,7 +174,7 @@ func (c *Config) ToRenderData() []*RenderData {
 			Module:      c.Module,
 			House:       c.WareHouse,
 			NetRC:       c.NetRC,
-			BuildFlags:  buildFlags,
+			LDFlags:     ldFlags,
 		}
 		renderData.MustValid(renderData)
 		return []*RenderData{renderData}
@@ -195,7 +195,7 @@ func (c *Config) ToRenderData() []*RenderData {
 			Module:      c.Module,
 			House:       c.WareHouse,
 			NetRC:       c.NetRC,
-			BuildFlags:  buildFlags,
+			LDFlags:     ldFlags,
 		}
 		renderData.MustValid(renderData)
 		renderDatas[i] = renderData
