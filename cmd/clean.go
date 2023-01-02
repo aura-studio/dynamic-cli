@@ -1,5 +1,5 @@
 /*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 */
 package cmd
 
@@ -7,14 +7,14 @@ import (
 	"log"
 	"strings"
 
+	"github.com/aura-studio/dynamic-cli/cleaner"
 	"github.com/aura-studio/dynamic-cli/config"
-	"github.com/aura-studio/dynamic-cli/pusher"
 	"github.com/spf13/cobra"
 )
 
-// pushCmd represents the push command
-var pushCmd = &cobra.Command{
-	Use:   "push",
+// cleanCmd represents the clean command
+var cleanCmd = &cobra.Command{
+	Use:   "clean",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -29,18 +29,17 @@ to quickly create a Cobra application.`,
 			config.SetDefaultWareHouse(warehouse)
 		}
 
-		if remotes, err := cmd.Flags().GetStringSlice("remote"); err != nil {
+		all, err := cmd.Flags().GetBool("all")
+		if err != nil {
 			log.Panic(err)
-		} else if len(remotes) > 0 {
-			config.SetDefaultRemotes(remotes)
 		}
 
 		if len(args) > 0 {
 			if strings.Contains(args[0], "@") {
-				pusher.PushFromRepo(args[0], args[1:]...)
+				cleaner.CleanFromRepo(all, args[0], args[1:]...)
 				return
 			} else {
-				pusher.PushFromJSONDir(args[0])
+				cleaner.CleanFromJSONDir(all, args[0])
 				return
 			}
 		}
@@ -48,23 +47,23 @@ to quickly create a Cobra application.`,
 		if file, err := cmd.Flags().GetString("file"); err != nil {
 			log.Panic(err)
 		} else if file != "" {
-			pusher.PushFromJSONFile(file)
+			cleaner.CleanFromJSONFile(all, file)
 			return
 		}
 
 		if dir, err := cmd.Flags().GetString("dir"); err != nil {
 			log.Panic(err)
 		} else if dir != "" {
-			pusher.PushFromJSONDir(dir)
+			cleaner.CleanFromJSONDir(all, dir)
 			return
 		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(pushCmd)
-	pushCmd.Flags().StringP("file", "f", "", "path of config file")
-	pushCmd.Flags().StringP("dir", "d", "", "path of config dir")
-	buildCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
-	pushCmd.Flags().StringSliceP("remote", "r", nil, "remote warehouse")
+	rootCmd.AddCommand(cleanCmd)
+	cleanCmd.Flags().StringP("file", "f", "", "path of config file")
+	cleanCmd.Flags().StringP("dir", "d", "", "path of config dir")
+	cleanCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
+	cleanCmd.Flags().BoolP("all", "a", false, "clean all packages")
 }
