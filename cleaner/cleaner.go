@@ -51,17 +51,17 @@ func (c *Cleaner) cleanFiles() {
 			}
 		} else {
 			if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-				var preserve bool
+				if path == dir {
+					return nil
+				}
 				for _, file := range c.Files {
 					if path == file {
-						preserve = true
+						return nil
 					}
 				}
-				if !preserve {
-					log.Printf("clean remove %s", path)
-					if err := os.RemoveAll(path); err != nil {
-						log.Panic(err)
-					}
+				log.Printf("clean remove %s", path)
+				if err := os.RemoveAll(path); err != nil {
+					log.Panic(err)
 				}
 				return nil
 			}); err != nil {
