@@ -15,7 +15,7 @@ import (
 // pushCmd represents the push command
 var pushCmd = &cobra.Command{
 	Use:   "push",
-	Short: "A brief description of your command",
+	Short: "Push *.so to remote path",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

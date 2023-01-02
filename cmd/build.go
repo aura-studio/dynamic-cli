@@ -15,7 +15,7 @@ import (
 // buildCmd represents the build command
 var buildCmd = &cobra.Command{
 	Use:   "build",
-	Short: "A brief description of your command",
+	Short: "Build *.so in warehouse path",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
