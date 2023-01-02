@@ -65,6 +65,6 @@ func init() {
 	rootCmd.AddCommand(pushCmd)
 	pushCmd.Flags().StringP("file", "f", "", "path of config file")
 	pushCmd.Flags().StringP("dir", "d", "", "path of config dir")
-	buildCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
+	pushCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
 	pushCmd.Flags().StringSliceP("remote", "r", nil, "remote warehouse")
 }
