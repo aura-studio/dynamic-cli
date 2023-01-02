@@ -33,6 +33,7 @@ func (c *Cleaner) cleanDirs() {
 				log.Panic(err)
 			}
 		} else {
+			log.Printf("clean remove %s", dir)
 			os.Remove(dir)
 		}
 	}
@@ -55,6 +56,7 @@ func (c *Cleaner) cleanFiles() {
 					}
 				}
 				if !preserve {
+					log.Printf("clean remove %s", path)
 					os.Remove(path)
 				}
 				return nil
