@@ -34,7 +34,9 @@ func (c *Cleaner) cleanDirs() {
 			}
 		} else {
 			log.Printf("clean remove %s", dir)
-			os.Remove(dir)
+			if err := os.Remove(dir); err != nil {
+				log.Panic(err)
+			}
 		}
 	}
 }
@@ -57,7 +59,9 @@ func (c *Cleaner) cleanFiles() {
 				}
 				if !preserve {
 					log.Printf("clean remove %s", path)
-					os.Remove(path)
+					if err := os.Remove(path); err != nil {
+						log.Panic(err)
+					}
 				}
 				return nil
 			}); err != nil {
