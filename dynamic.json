@@ -1,0 +1,14 @@
+[
+    {
+        "module": "codeup.aliyun.com/mirror/RogueLite/xcutsrv",
+        "namespace": "xcut",
+        "commit": "0b66616",
+        "packages": [
+            "ddb"
+        ],
+        "netrc": "machine codeup.aliyun.com login finance@mirroringtech.com password agp_12d68a9572c2897119934df1d07456ec",
+        "remotes": [
+            "s3://mirroring-lambda"
+        ]
+    }
+]

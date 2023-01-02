@@ -32,7 +32,7 @@ func PushFromJSONFile(path string) {
 }
 
 // BuildFromJSONPath pushes a package from json path
-func PushFromJSONPath(path string) {
+func PushFromJSONDir(path string) {
 	configs := config.ParseJSONPath(path)
 	for _, config := range configs {
 		fileList := NewTaskList(config)

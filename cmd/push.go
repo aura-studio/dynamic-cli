@@ -34,7 +34,7 @@ to quickly create a Cobra application.`,
 				pusher.PushFromRepo(args[0], args[1:]...)
 				return
 			} else {
-				pusher.PushFromJSONPath(args[0])
+				pusher.PushFromJSONDir(args[0])
 				return
 			}
 		}
@@ -49,7 +49,7 @@ to quickly create a Cobra application.`,
 		if dir, err := cmd.Flags().GetString("dir"); err != nil {
 			log.Panic(err)
 		} else if dir != "" {
-			pusher.PushFromJSONPath(dir)
+			pusher.PushFromJSONDir(dir)
 			return
 		}
 	},

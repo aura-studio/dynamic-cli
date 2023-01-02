@@ -25,7 +25,9 @@ func (f *TaskList) Add(remote string, remoteFilePath string, localFilePath strin
 }
 
 func NewTaskList(c config.Config) *TaskList {
-	fileList := &TaskList{}
+	fileList := &TaskList{
+		Tasks: make(map[string][]Pair),
+	}
 
 	if len(c.Packages) == 0 {
 		pkg := c.Module[strings.LastIndex(c.Module, "/")+1:]
@@ -33,8 +35,8 @@ func NewTaskList(c config.Config) *TaskList {
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, pkg}, "_")
 		}
-		libcgo := fmt.Sprintf("%s/%s_%s/libcgo_%s_%s.so", c.WareHouse, name, c.Commit, name, c.Commit)
-		libgo := fmt.Sprintf("%s/%s_%s/libgo_%s_%s.so", c.WareHouse, name, c.Commit, name, c.Commit)
+		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Commit, name, c.Commit)
+		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Commit, name, c.Commit)
 
 		for _, remote := range c.Remotes {
 			fileList.Add(remote, libcgo, filepath.Join(c.WareHouse, libcgo))
@@ -48,8 +50,8 @@ func NewTaskList(c config.Config) *TaskList {
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
-		libcgo := fmt.Sprintf("%s/%s_%s/libcgo_%s_%s.so", c.WareHouse, name, c.Commit, name, c.Commit)
-		libgo := fmt.Sprintf("%s/%s_%s/libgo_%s_%s.so", c.WareHouse, name, c.Commit, name, c.Commit)
+		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Commit, name, c.Commit)
+		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Commit, name, c.Commit)
 		for _, remote := range c.Remotes {
 			fileList.Add(remote, libcgo, filepath.Join(c.WareHouse, libcgo))
 			fileList.Add(remote, libgo, filepath.Join(c.WareHouse, libgo))

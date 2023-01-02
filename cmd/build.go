@@ -46,7 +46,7 @@ to quickly create a Cobra application.`,
 				builder.BuildFromRepo(args[0], args[1:]...)
 				return
 			} else {
-				builder.BuildFromJSONPath(args[0])
+				builder.BuildFromJSONDir(args[0])
 				return
 			}
 		}
@@ -61,7 +61,7 @@ to quickly create a Cobra application.`,
 		if dir, err := cmd.Flags().GetString("dir"); err != nil {
 			log.Panic(err)
 		} else if dir != "" {
-			builder.BuildFromJSONPath(dir)
+			builder.BuildFromJSONDir(dir)
 			return
 		}
 	},

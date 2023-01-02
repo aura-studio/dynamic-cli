@@ -35,8 +35,8 @@ func BuildFromJSONFile(path string) {
 	}
 }
 
-// BuildFromJSONPath builds a package from json path
-func BuildFromJSONPath(path string) {
+// BuildFromJSONDir builds a package from json path
+func BuildFromJSONDir(path string) {
 	configs := config.ParseJSONPath(path)
 	for _, config := range configs {
 		renderDatas := NewRenderData(config)
