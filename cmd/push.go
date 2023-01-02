@@ -66,7 +66,7 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	buildCmd.Flags().StringP("file", "f", "", "path of config file")
-	buildCmd.Flags().StringP("dir", "d", "", "path of config dir")
+	pushCmd.Flags().StringP("file", "f", "", "path of config file")
+	pushCmd.Flags().StringP("dir", "d", "", "path of config dir")
 	pushCmd.Flags().StringSliceP("remote", "r", nil, "remote warehouse")
 }
