@@ -48,7 +48,7 @@ func (c *Cleaner) cleanFiles() {
 				log.Panic(err)
 			}
 		} else {
-			filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+			if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 				var preserve bool
 				for _, file := range c.Files {
 					if path == file {
@@ -60,7 +60,9 @@ func (c *Cleaner) cleanFiles() {
 					os.Remove(path)
 				}
 				return nil
-			})
+			}); err != nil {
+				log.Panic(err)
+			}
 		}
 	}
 }
