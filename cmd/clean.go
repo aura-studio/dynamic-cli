@@ -62,8 +62,8 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(cleanCmd)
-	cleanCmd.Flags().StringP("file", "f", "", "path of config file")
-	cleanCmd.Flags().StringP("dir", "d", "", "path of config dir")
-	cleanCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
+	cleanCmd.Flags().StringP("file", "f", "/tmp/dynamic.json", "path of config file")
+	cleanCmd.Flags().StringP("dir", "d", "/tmp", "path of config dir")
+	cleanCmd.Flags().StringP("warehouse", "w", "/tmp/warehouse", "path of warehouse")
 	cleanCmd.Flags().BoolP("all", "a", false, "clean all packages")
 }

@@ -63,8 +63,8 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(pushCmd)
-	pushCmd.Flags().StringP("file", "f", "", "path of config file")
-	pushCmd.Flags().StringP("dir", "d", "", "path of config dir")
-	pushCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
+	pushCmd.Flags().StringP("file", "f", "/tmp/dynamic.json", "path of config file")
+	pushCmd.Flags().StringP("dir", "d", "/tmp", "path of config dir")
+	pushCmd.Flags().StringP("warehouse", "w", "/tmp/warehouse", "path of warehouse")
 	pushCmd.Flags().StringSliceP("remote", "r", nil, "remote warehouse")
 }

@@ -69,9 +69,9 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(buildCmd)
-	buildCmd.Flags().StringP("file", "f", "", "path of config file")
-	buildCmd.Flags().StringP("dir", "d", "", "path of config dir")
-	buildCmd.Flags().StringP("warehouse", "w", "", "path of warehouse")
-	buildCmd.Flags().StringP("gover", "v", "", "version of golang")
+	buildCmd.Flags().StringP("file", "f", "/tmp/dynamic.json", "path of config file")
+	buildCmd.Flags().StringP("dir", "d", "/tmp", "path of config dir")
+	buildCmd.Flags().StringP("warehouse", "w", "/tmp/warehouse", "path of warehouse")
+	buildCmd.Flags().StringP("gover", "v", "1.18", "version of golang")
 	buildCmd.Flags().BoolP("debug", "g", false, "build debug version")
 }
