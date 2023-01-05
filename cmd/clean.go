@@ -30,7 +30,7 @@ to quickly create a Cobra application.`,
 		}
 
 		var cleanType = cleaner.CleanTypeCache
-		pkg, err := cmd.Flags().GetBool("pkg")
+		pkg, err := cmd.Flags().GetBool("package")
 		if err != nil {
 			log.Panic(err)
 		}
