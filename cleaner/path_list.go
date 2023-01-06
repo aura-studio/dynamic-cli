@@ -9,8 +9,9 @@ import (
 )
 
 type PathList struct {
-	Dirs  []string
-	Files []string
+	WareHouse string
+	Dirs      []string
+	Files     []string
 }
 
 func (f *PathList) AddDir(dir string) {
@@ -23,7 +24,9 @@ func (f *PathList) AddFile(file string) {
 
 func NewPathList(c config.Config) *PathList {
 	pathList := &PathList{
-		Files: make([]string, 0),
+		WareHouse: c.WareHouse,
+		Dirs:      make([]string, 0),
+		Files:     make([]string, 0),
 	}
 
 	if len(c.Packages) == 0 {

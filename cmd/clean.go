@@ -29,17 +29,29 @@ to quickly create a Cobra application.`,
 			config.SetDefaultWareHouse(warehouse)
 		}
 
+		var cleanType = cleaner.CleanTypeCache
+		pkg, err := cmd.Flags().GetBool("package")
+		if err != nil {
+			log.Panic(err)
+		}
+		if pkg {
+			cleanType = cleaner.CleanTypePackage
+		}
+
 		all, err := cmd.Flags().GetBool("all")
 		if err != nil {
 			log.Panic(err)
 		}
+		if all {
+			cleanType = cleaner.CleanTypeAll
+		}
 
 		if len(args) > 0 {
 			if strings.Contains(args[0], "@") {
-				cleaner.CleanFromRepo(all, args[0], args[1:]...)
+				cleaner.CleanFromRepo(cleanType, args[0], args[1:]...)
 				return
 			} else {
-				cleaner.CleanFromJSONDir(all, args[0])
+				cleaner.CleanFromJSONDir(cleanType, args[0])
 				return
 			}
 		}
@@ -47,14 +59,14 @@ to quickly create a Cobra application.`,
 		if file, err := cmd.Flags().GetString("file"); err != nil {
 			log.Panic(err)
 		} else if file != "" {
-			cleaner.CleanFromJSONFile(all, file)
+			cleaner.CleanFromJSONFile(cleanType, file)
 			return
 		}
 
 		if dir, err := cmd.Flags().GetString("dir"); err != nil {
 			log.Panic(err)
 		} else if dir != "" {
-			cleaner.CleanFromJSONDir(all, dir)
+			cleaner.CleanFromJSONDir(cleanType, dir)
 			return
 		}
 	},
@@ -65,5 +77,6 @@ func init() {
 	cleanCmd.Flags().StringP("file", "f", "/tmp/dynamic.json", "path of config file")
 	cleanCmd.Flags().StringP("dir", "d", "/tmp", "path of config dir")
 	cleanCmd.Flags().StringP("warehouse", "w", "/tmp/warehouse", "path of warehouse")
-	cleanCmd.Flags().BoolP("all", "a", false, "clean all packages")
+	cleanCmd.Flags().BoolP("package", "p", false, "clean package")
+	cleanCmd.Flags().BoolP("all", "a", false, "clean warehouse")
 }

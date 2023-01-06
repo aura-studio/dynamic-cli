@@ -6,6 +6,14 @@ import (
 	"path/filepath"
 )
 
+type CleanType int
+
+const (
+	CleanTypeCache CleanType = iota
+	CleanTypePackage
+	CleanTypeAll
+)
+
 type Cleaner struct {
 	*PathList
 }
@@ -16,15 +24,48 @@ func New(pathList *PathList) *Cleaner {
 	}
 }
 
-func (c *Cleaner) Clean(all bool) {
-	if all {
-		c.cleanDirs()
-	} else {
-		c.cleanFiles()
+func (c *Cleaner) Clean(cleanType CleanType) {
+	switch cleanType {
+	case CleanTypeCache:
+		c.cleanCache()
+	case CleanTypePackage:
+		c.cleanPackage()
+	case CleanTypeAll:
+		c.cleanAll()
+	default:
+		log.Panicf("clean type not found: %d", cleanType)
 	}
 }
 
-func (c *Cleaner) cleanDirs() {
+func (c *Cleaner) cleanAll() {
+	if _, err := os.Stat(c.WareHouse); err != nil {
+		if os.IsNotExist(err) {
+			return
+		} else {
+			log.Panic(err)
+		}
+	} else {
+		entries, err := os.ReadDir(c.WareHouse)
+		if err != nil {
+			log.Panic(err)
+		}
+		for _, file := range entries {
+			if file.IsDir() {
+				log.Printf("clean remove %s", filepath.Join(c.WareHouse, file.Name()))
+				if err := os.RemoveAll(filepath.Join(c.WareHouse, file.Name())); err != nil {
+					log.Panic(err)
+				}
+			} else {
+				log.Printf("clean remove %s", filepath.Join(c.WareHouse, file.Name()))
+				if err := os.Remove(filepath.Join(c.WareHouse, file.Name())); err != nil {
+					log.Panic(err)
+				}
+			}
+		}
+	}
+}
+
+func (c *Cleaner) cleanPackage() {
 	for _, dir := range c.Dirs {
 		if _, err := os.Stat(dir); err != nil {
 			if os.IsNotExist(err) {
@@ -41,7 +82,7 @@ func (c *Cleaner) cleanDirs() {
 	}
 }
 
-func (c *Cleaner) cleanFiles() {
+func (c *Cleaner) cleanCache() {
 	for _, dir := range c.Dirs {
 		if _, err := os.Stat(dir); err != nil {
 			if os.IsNotExist(err) {
