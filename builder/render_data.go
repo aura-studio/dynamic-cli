@@ -21,7 +21,7 @@ type RenderData struct {
 
 func (r *RenderData) MustValid(renderData *RenderData) {
 	for _, b := range []byte(r.Name) {
-		if b >= 'a' && b <= 'z' || b >= '0' && b <= '9' || b == '_' {
+		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' {
 			continue
 		}
 		log.Panicf("invalid character '%s' in name", string(b))
@@ -41,16 +41,17 @@ func NewRenderData(c config.Config) []*RenderData {
 	}
 
 	if len(c.Packages) == 0 {
-		pkg := c.Module[strings.LastIndex(c.Module, "/")+1:]
-		name := pkg
+		packagePath := c.Module
+		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
+		name := strings.Join([]string{packageName, c.Commit}, "_")
 		if len(c.Namespace) > 0 {
-			name = strings.Join([]string{c.Namespace, pkg}, "_")
+			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
 		renderData := &RenderData{
 			GoVersion:   c.GoVer,
 			Name:        name,
 			Version:     c.Commit,
-			Package:     pkg,
+			Package:     packageName,
 			FullPackage: c.Module,
 			Module:      c.Module,
 			House:       c.WareHouse,
@@ -62,8 +63,9 @@ func NewRenderData(c config.Config) []*RenderData {
 	}
 
 	renderDatas := make([]*RenderData, len(c.Packages))
-	for i, pkg := range c.Packages {
-		name := pkg[strings.LastIndex(pkg, "/")+1:]
+	for i, packagePath := range c.Packages {
+		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
+		name := strings.Join([]string{packageName, c.Commit}, "_")
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
@@ -71,8 +73,8 @@ func NewRenderData(c config.Config) []*RenderData {
 			GoVersion:   c.GoVer,
 			Name:        name,
 			Version:     c.Commit,
-			Package:     pkg,
-			FullPackage: strings.Join([]string{c.Module, pkg}, "/"),
+			Package:     packageName,
+			FullPackage: strings.Join([]string{c.Module, packagePath}, "/"),
 			Module:      c.Module,
 			House:       c.WareHouse,
 			NetRC:       c.NetRC,

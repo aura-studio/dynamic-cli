@@ -1,7 +1,7 @@
 package builder
 
 func init() {
-	templateMap["{{.House}}/{{.Name}}_{{.Version}}/go.mod"] = `module dynamicbuilder
+	templateMap["{{.House}}/{{.Name}}/go.mod"] = `module dynamicbuilder
 
 go {{.GoVersion}}
 
