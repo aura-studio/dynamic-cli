@@ -117,12 +117,12 @@ func (b *Builder) generate() {
 
 // runBuilder run ./builder.sh
 func (b *Builder) runBuilder() {
-	if err := os.Chmod(filepath.Join(b.config.House, b.config.Name+"_"+b.config.Version, "builder.sh"), 0755); err != nil {
+	if err := os.Chmod(filepath.Join(b.config.House, b.config.Name, "builder.sh"), 0755); err != nil {
 		log.Panic(err)
 	}
 
 	cmd := exec.Command("sh", "-c", "./builder.sh")
-	cmd.Dir = filepath.Join(b.config.House, b.config.Name+"_"+b.config.Version)
+	cmd.Dir = filepath.Join(b.config.House, b.config.Name)
 	cmd.Env = append(os.Environ(), "USER="+b.user.Username, "HOME="+b.user.HomeDir)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
