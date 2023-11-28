@@ -6,6 +6,6 @@ RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo Asia/Shangh
 	ln -sf /usr/local/go/bin/go /usr/local/bin
 
 ARG VERSION
-RUN	go install github.com/aura-studio/dynamic-cli@master
+RUN	go install github.com/aura-studio/dynamic-cli@${VERSION}
 
 ENTRYPOINT ["/root/go/bin/dynamic-cli"]
