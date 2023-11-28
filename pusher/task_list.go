@@ -47,10 +47,10 @@ func NewTaskList(c config.Config) *TaskList {
 				if d.IsDir() {
 					return nil
 				}
-				if strings.HasPrefix(path, libcgo) {
+				if strings.Contains(path, libcgo) {
 					fileList.Add(remote, libcgo, path)
 				}
-				if strings.HasPrefix(path, libgo) {
+				if strings.Contains(path, libgo) {
 					fileList.Add(remote, libgo, path)
 				}
 				return nil
