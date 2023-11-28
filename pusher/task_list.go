@@ -48,10 +48,12 @@ func NewTaskList(c config.Config) *TaskList {
 					return nil
 				}
 				if strings.Contains(path, libcgo) {
-					fileList.Add(remote, libcgo, path)
+					index := strings.Index(path, libcgo)
+					fileList.Add(remote, path[index:], path)
 				}
 				if strings.Contains(path, libgo) {
-					fileList.Add(remote, libgo, path)
+					index := strings.Index(path, libgo)
+					fileList.Add(remote, path[index:], path)
 				}
 				return nil
 			}); err != nil {
@@ -77,10 +79,12 @@ func NewTaskList(c config.Config) *TaskList {
 					return nil
 				}
 				if strings.Contains(path, libcgo) {
-					fileList.Add(remote, libcgo, path)
+					index := strings.Index(path, libcgo)
+					fileList.Add(remote, path[index:], path)
 				}
 				if strings.Contains(path, libgo) {
-					fileList.Add(remote, libgo, path)
+					index := strings.Index(path, libgo)
+					fileList.Add(remote, path[index:], path)
 				}
 				return nil
 			}); err != nil {
