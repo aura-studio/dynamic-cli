@@ -69,8 +69,23 @@ func NewTaskList(c config.Config) *TaskList {
 		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Commit, name, c.Commit)
 		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Commit, name, c.Commit)
 		for _, remote := range c.Remotes {
-			fileList.Add(remote, libcgo, filepath.Join(c.WareHouse, libcgo))
-			fileList.Add(remote, libgo, filepath.Join(c.WareHouse, libgo))
+			if err := filepath.WalkDir(c.WareHouse, func(path string, d fs.DirEntry, err error) error {
+				if err != nil {
+					return err
+				}
+				if d.IsDir() {
+					return nil
+				}
+				if strings.Contains(path, libcgo) {
+					fileList.Add(remote, libcgo, path)
+				}
+				if strings.Contains(path, libgo) {
+					fileList.Add(remote, libgo, path)
+				}
+				return nil
+			}); err != nil {
+				panic(err)
+			}
 		}
 	}
 
