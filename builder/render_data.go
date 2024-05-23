@@ -2,7 +2,6 @@ package builder
 
 import (
 	"log"
-	"runtime"
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/config"
@@ -22,13 +21,13 @@ type RenderData struct {
 
 func (r *RenderData) MustValid(renderData *RenderData) {
 	for _, b := range []byte(r.Name) {
-		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' || b == '-' || b == '.' {
+		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' {
 			continue
 		}
 		log.Panicf("invalid character '%s' in name", string(b))
 	}
 	for _, b := range []byte(r.Version) {
-		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' || b == '-' || b == '.' {
+		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' {
 			continue
 		}
 		log.Panicf("invalid character '%s' in version", string(b))
@@ -44,7 +43,7 @@ func NewRenderData(c config.Config) []*RenderData {
 	if len(c.Packages) == 0 {
 		packagePath := c.Module
 		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
-		name := strings.Join([]string{runtime.Version(), packageName, c.Commit}, "_")
+		name := strings.Join([]string{packageName, c.Commit}, "_")
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
@@ -66,7 +65,7 @@ func NewRenderData(c config.Config) []*RenderData {
 	renderDatas := make([]*RenderData, len(c.Packages))
 	for i, packagePath := range c.Packages {
 		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
-		name := strings.Join([]string{runtime.Version(), packageName, c.Commit}, "_")
+		name := strings.Join([]string{packageName, c.Commit}, "_")
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
