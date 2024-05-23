@@ -22,13 +22,13 @@ type RenderData struct {
 
 func (r *RenderData) MustValid(renderData *RenderData) {
 	for _, b := range []byte(r.Name) {
-		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' {
+		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' || b == '-' || b == '.' {
 			continue
 		}
 		log.Panicf("invalid character '%s' in name", string(b))
 	}
 	for _, b := range []byte(r.Version) {
-		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' {
+		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' || b == '-' || b == '.' {
 			continue
 		}
 		log.Panicf("invalid character '%s' in version", string(b))
