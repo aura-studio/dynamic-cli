@@ -50,11 +50,11 @@ func NewTaskList(c config.Config) *TaskList {
 				}
 				if strings.Contains(path, libcgo) {
 					index := strings.Index(path, libcgo)
-					fileList.Add(filepath.Join(runtime.Version(), remote), path[index:], path)
+					fileList.Add(remote, filepath.Join(runtime.Version(), path[index:]), path)
 				}
 				if strings.Contains(path, libgo) {
 					index := strings.Index(path, libgo)
-					fileList.Add(filepath.Join(runtime.Version(), remote), path[index:], path)
+					fileList.Add(remote, filepath.Join(runtime.Version(), path[index:]), path)
 				}
 				return nil
 			}); err != nil {
@@ -81,11 +81,11 @@ func NewTaskList(c config.Config) *TaskList {
 				}
 				if strings.Contains(path, libcgo) {
 					index := strings.Index(path, libcgo)
-					fileList.Add(filepath.Join(runtime.Version(), remote), path[index:], path)
+					fileList.Add(remote, filepath.Join(runtime.Version(), path[index:]), path)
 				}
 				if strings.Contains(path, libgo) {
 					index := strings.Index(path, libgo)
-					fileList.Add(filepath.Join(runtime.Version(), remote), path[index:], path)
+					fileList.Add(remote, filepath.Join(runtime.Version(), path[index:]), path)
 				}
 				return nil
 			}); err != nil {
