@@ -2,6 +2,7 @@ package builder
 
 import (
 	"log"
+	"runtime"
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/config"
@@ -43,7 +44,7 @@ func NewRenderData(c config.Config) []*RenderData {
 	if len(c.Packages) == 0 {
 		packagePath := c.Module
 		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
-		name := strings.Join([]string{packageName, c.Commit}, "_")
+		name := strings.Join([]string{runtime.Version(), packageName, c.Commit}, "_")
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
