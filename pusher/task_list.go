@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/config"
@@ -20,8 +21,8 @@ type Pair struct {
 
 func (f *TaskList) Add(remote string, remoteFilePath string, localFilePath string) {
 	f.Tasks[remote] = append(f.Tasks[remote], Pair{
-		RemoteFilePath: remoteFilePath,
-		LocalFilePath:  localFilePath,
+		RemoteFilePath: fmt.Sprintf("%s/%s", remoteFilePath, runtime.Version()),
+		LocalFilePath:  fmt.Sprintf("%s/%s", localFilePath, runtime.Version()),
 	})
 }
 
