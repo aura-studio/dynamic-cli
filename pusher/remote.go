@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -85,7 +86,7 @@ func (r *S3Remote) batchUploadFilesToS3(pairs []Pair) error {
 				errChan <- err
 				return
 			} else {
-				log.Printf("%s exists, uploading to s3[%s]...", localFilePath, remoteFilePath)
+				log.Printf("%s found, uploading to %s...", localFilePath, filepath.Join(r.bucket, remoteFilePath))
 				if err := r.uploadFileToS3(remoteFilePath, localFilePath); err != nil {
 					log.Printf("failed to upload file to s3, %v", err)
 					errChan <- err

@@ -21,8 +21,8 @@ type Pair struct {
 
 func (f *TaskList) Add(remote string, remoteFilePath string, localFilePath string) {
 	f.Tasks[remote] = append(f.Tasks[remote], Pair{
-		RemoteFilePath: fmt.Sprintf("%s/%s", remoteFilePath, runtime.Version()),
-		LocalFilePath:  fmt.Sprintf("%s/%s", localFilePath, runtime.Version()),
+		RemoteFilePath: remoteFilePath,
+		LocalFilePath:  localFilePath,
 	})
 }
 
@@ -50,11 +50,11 @@ func NewTaskList(c config.Config) *TaskList {
 				}
 				if strings.Contains(path, libcgo) {
 					index := strings.Index(path, libcgo)
-					fileList.Add(remote, path[index:], path)
+					fileList.Add(filepath.Join(runtime.Version(), remote), path[index:], path)
 				}
 				if strings.Contains(path, libgo) {
 					index := strings.Index(path, libgo)
-					fileList.Add(remote, path[index:], path)
+					fileList.Add(filepath.Join(runtime.Version(), remote), path[index:], path)
 				}
 				return nil
 			}); err != nil {
