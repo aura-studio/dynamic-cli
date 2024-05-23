@@ -56,7 +56,7 @@ func NewRenderData(c config.Config) []*RenderData {
 			Package:     packageName,
 			FullPackage: c.Module,
 			Module:      c.Module,
-			House:       fmt.Sprintf("%s/%s", c.WareHouse, runtime.Version()),
+			House:       fmt.Sprintf("%s/%s", runtime.Version(), c.WareHouse),
 			NetRC:       c.NetRC,
 			LDFlags:     ldFlags,
 		}
@@ -78,7 +78,7 @@ func NewRenderData(c config.Config) []*RenderData {
 			Package:     packageName,
 			FullPackage: strings.Join([]string{c.Module, packagePath}, "/"),
 			Module:      c.Module,
-			House:       c.WareHouse,
+			House:       fmt.Sprintf("%s/%s", runtime.Version(), c.WareHouse),
 			NetRC:       c.NetRC,
 			LDFlags:     ldFlags,
 		}
