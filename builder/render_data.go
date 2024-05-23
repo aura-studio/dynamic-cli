@@ -66,7 +66,7 @@ func NewRenderData(c config.Config) []*RenderData {
 	renderDatas := make([]*RenderData, len(c.Packages))
 	for i, packagePath := range c.Packages {
 		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
-		name := strings.Join([]string{packageName, c.Commit}, "_")
+		name := strings.Join([]string{runtime.Version(), packageName, c.Commit}, "_")
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
