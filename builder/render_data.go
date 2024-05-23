@@ -78,7 +78,7 @@ func NewRenderData(c config.Config) []*RenderData {
 			Package:     packageName,
 			FullPackage: strings.Join([]string{c.Module, packagePath}, "/"),
 			Module:      c.Module,
-			House:       filepath.Join("%s/%s", c.WareHouse, runtime.Version()),
+			House:       filepath.Join(c.WareHouse, runtime.Version()),
 			NetRC:       c.NetRC,
 			LDFlags:     ldFlags,
 		}
