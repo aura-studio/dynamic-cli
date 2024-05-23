@@ -3,6 +3,7 @@ package cleaner
 import (
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/config"
@@ -40,9 +41,9 @@ func NewPathList(c config.Config) *PathList {
 		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Commit, name, c.Commit)
 		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Commit, name, c.Commit)
 
-		pathList.AddDir(filepath.Join(c.WareHouse, dir))
-		pathList.AddFile(filepath.Join(c.WareHouse, libcgo))
-		pathList.AddFile(filepath.Join(c.WareHouse, libgo))
+		pathList.AddDir(filepath.Join(c.WareHouse, runtime.Version(), dir))
+		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libcgo))
+		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libgo))
 
 		return pathList
 	}
@@ -57,9 +58,9 @@ func NewPathList(c config.Config) *PathList {
 		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Commit, name, c.Commit)
 		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Commit, name, c.Commit)
 
-		pathList.AddDir(filepath.Join(c.WareHouse, dir))
-		pathList.AddFile(filepath.Join(c.WareHouse, libcgo))
-		pathList.AddFile(filepath.Join(c.WareHouse, libgo))
+		pathList.AddDir(filepath.Join(c.WareHouse, runtime.Version(), dir))
+		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libcgo))
+		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libgo))
 	}
 
 	return pathList

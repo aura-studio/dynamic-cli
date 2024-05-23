@@ -1,7 +1,9 @@
 package builder
 
 import (
+	"fmt"
 	"log"
+	"runtime"
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/config"
@@ -54,7 +56,7 @@ func NewRenderData(c config.Config) []*RenderData {
 			Package:     packageName,
 			FullPackage: c.Module,
 			Module:      c.Module,
-			House:       c.WareHouse,
+			House:       fmt.Sprintf("%s/%s", c.WareHouse, runtime.Version()),
 			NetRC:       c.NetRC,
 			LDFlags:     ldFlags,
 		}
