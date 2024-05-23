@@ -86,7 +86,7 @@ func (r *S3Remote) batchUploadFilesToS3(pairs []Pair) error {
 				errChan <- err
 				return
 			} else {
-				log.Printf("%s found, uploading to %s...", localFilePath, filepath.Join(r.bucket, remoteFilePath))
+				log.Printf("%s found, uploading to s3://%s...", localFilePath, filepath.Join(r.bucket, remoteFilePath))
 				if err := r.uploadFileToS3(remoteFilePath, localFilePath); err != nil {
 					log.Printf("failed to upload file to s3, %v", err)
 					errChan <- err
