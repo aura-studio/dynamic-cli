@@ -13,7 +13,7 @@ type Config struct {
 	Module    string   `json:"module"`
 	Debug     bool     `json:"debug"`
 	Namespace string   `json:"namespace"`
-	Commit    string   `json:"commit"`
+	Ref       string   `json:"ref"`
 	Packages  []string `json:"packages"`
 	WareHouse string   `json:"warehouse"`
 	NetRC     string   `json:"netrc"`
@@ -53,7 +53,7 @@ func ParseRepo(repo string, packages ...string) []Config {
 		GoVer:     DefaultConfig.GoVer,
 		Module:    mod,
 		Namespace: "",
-		Commit:    commit,
+		Ref:       commit,
 		Packages:  packages,
 		WareHouse: DefaultConfig.WareHouse,
 		NetRC:     "",

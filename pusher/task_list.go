@@ -37,8 +37,8 @@ func NewTaskList(c config.Config) *TaskList {
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, pkg}, "_")
 		}
-		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Commit, name, c.Commit)
-		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Commit, name, c.Commit)
+		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Ref, name, c.Ref)
+		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Ref, name, c.Ref)
 
 		for _, remote := range c.Remotes {
 			if err := filepath.WalkDir(c.WareHouse, func(path string, d fs.DirEntry, err error) error {
@@ -69,8 +69,8 @@ func NewTaskList(c config.Config) *TaskList {
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
-		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Commit, name, c.Commit)
-		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Commit, name, c.Commit)
+		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Ref, name, c.Ref)
+		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Ref, name, c.Ref)
 		for _, remote := range c.Remotes {
 			if err := filepath.WalkDir(c.WareHouse, func(path string, d fs.DirEntry, err error) error {
 				if err != nil {

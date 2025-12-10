@@ -37,9 +37,9 @@ func NewPathList(c config.Config) *PathList {
 			name = strings.Join([]string{c.Namespace, pkg}, "_")
 		}
 
-		dir := fmt.Sprintf("%s_%s", name, c.Commit)
-		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Commit, name, c.Commit)
-		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Commit, name, c.Commit)
+		dir := fmt.Sprintf("%s_%s", name, c.Ref)
+		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Ref, name, c.Ref)
+		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Ref, name, c.Ref)
 
 		pathList.AddDir(filepath.Join(c.WareHouse, runtime.Version(), dir))
 		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libcgo))
@@ -54,9 +54,9 @@ func NewPathList(c config.Config) *PathList {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
 
-		dir := fmt.Sprintf("%s_%s", name, c.Commit)
-		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Commit, name, c.Commit)
-		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Commit, name, c.Commit)
+		dir := fmt.Sprintf("%s_%s", name, c.Ref)
+		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Ref, name, c.Ref)
+		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Ref, name, c.Ref)
 
 		pathList.AddDir(filepath.Join(c.WareHouse, runtime.Version(), dir))
 		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libcgo))

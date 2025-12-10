@@ -45,14 +45,14 @@ func NewRenderData(c config.Config) []*RenderData {
 	if len(c.Packages) == 0 {
 		packagePath := c.Module
 		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
-		name := strings.Join([]string{packageName, c.Commit}, "_")
+		name := strings.Join([]string{packageName, c.Ref}, "_")
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
 		renderData := &RenderData{
 			GoVersion:   c.GoVer,
 			Name:        name,
-			Version:     c.Commit,
+			Version:     c.Ref,
 			Package:     packageName,
 			FullPackage: c.Module,
 			Module:      c.Module,
@@ -67,14 +67,14 @@ func NewRenderData(c config.Config) []*RenderData {
 	renderDatas := make([]*RenderData, len(c.Packages))
 	for i, packagePath := range c.Packages {
 		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
-		name := strings.Join([]string{packageName, c.Commit}, "_")
+		name := strings.Join([]string{packageName, c.Ref}, "_")
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, name}, "_")
 		}
 		renderData := &RenderData{
 			GoVersion:   c.GoVer,
 			Name:        name,
-			Version:     c.Commit,
+			Version:     c.Ref,
 			Package:     packageName,
 			FullPackage: strings.Join([]string{c.Module, packagePath}, "/"),
 			Module:      c.Module,
