@@ -10,13 +10,13 @@ import (
 
 type Config struct {
 	GoVer     string   `json:"gover"`
-	Module    string   `json:"module"`
+	Path      string   `json:"path"`
+	Ref       string   `json:"ref"`
+	NetRC     string   `json:"netrc"`
 	Debug     bool     `json:"debug"`
 	Namespace string   `json:"namespace"`
-	Ref       string   `json:"ref"`
 	Packages  []string `json:"packages"`
 	WareHouse string   `json:"warehouse"`
-	NetRC     string   `json:"netrc"`
 	Remotes   []string `json:"remotes"`
 }
 
@@ -52,7 +52,7 @@ func ParseRepo(repo string, packages ...string) []Config {
 	ref := strs[1]
 	config := Config{
 		GoVer:     DefaultConfig.GoVer,
-		Module:    mod,
+		Path:      mod,
 		Namespace: "",
 		Ref:       ref,
 		Packages:  packages,

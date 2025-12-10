@@ -1,11 +1,11 @@
 [
   {
-    "module": "github.com/hub-name/module-name",
+    "path": "github.com/hub-name/module-name",
     "ref": "eafda1f2"
   },
   {
     "gover": "1.18",
-    "module": "private.repo.com/hub-name/module-name",
+    "path": "private.repo.com/hub-name/module-name",
     "ref": "commit-hash-8-characters",
     "packages": ["relative", "package/path", "from", "module/path"],
     "warehouse": "/opt/go-dynamic-warehouse",

@@ -32,7 +32,7 @@ func NewTaskList(c config.Config) *TaskList {
 	}
 
 	if len(c.Packages) == 0 {
-		pkg := c.Module[strings.LastIndex(c.Module, "/")+1:]
+		pkg := c.Path[strings.LastIndex(c.Path, "/")+1:]
 		name := pkg
 		if len(c.Namespace) > 0 {
 			name = strings.Join([]string{c.Namespace, pkg}, "_")

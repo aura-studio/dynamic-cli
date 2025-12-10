@@ -43,7 +43,7 @@ func NewRenderData(c config.Config) []*RenderData {
 	}
 
 	if len(c.Packages) == 0 {
-		packagePath := c.Module
+		packagePath := c.Path
 		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
 		name := strings.Join([]string{packageName, c.Ref}, "_")
 		if len(c.Namespace) > 0 {
@@ -54,8 +54,8 @@ func NewRenderData(c config.Config) []*RenderData {
 			Name:        name,
 			Version:     c.Ref,
 			Package:     packageName,
-			FullPackage: c.Module,
-			Module:      c.Module,
+			FullPackage: c.Path,
+			Module:      c.Path,
 			House:       filepath.Join(c.WareHouse, runtime.Version()),
 			NetRC:       c.NetRC,
 			LDFlags:     ldFlags,
@@ -76,8 +76,8 @@ func NewRenderData(c config.Config) []*RenderData {
 			Name:        name,
 			Version:     c.Ref,
 			Package:     packageName,
-			FullPackage: strings.Join([]string{c.Module, packagePath}, "/"),
-			Module:      c.Module,
+			FullPackage: strings.Join([]string{c.Path, packagePath}, "/"),
+			Module:      c.Path,
 			House:       filepath.Join(c.WareHouse, runtime.Version()),
 			NetRC:       c.NetRC,
 			LDFlags:     ldFlags,
