@@ -25,6 +25,7 @@ var DefaultConfig = Config{
 	WareHouse: "/tmp/warehouse",
 	Debug:     false,
 	Remotes:   []string{},
+	NetRC:     os.Getenv("DYNAMIC_CLI_NETRC"),
 }
 
 func SetDefaultGoVer(ver string) {
@@ -48,15 +49,15 @@ func SetDefaultRemotes(remotes []string) {
 func ParseRepo(repo string, packages ...string) []Config {
 	strs := strings.Split(repo, "@")
 	mod := strs[0]
-	commit := strs[1]
+	ref := strs[1]
 	config := Config{
 		GoVer:     DefaultConfig.GoVer,
 		Module:    mod,
 		Namespace: "",
-		Ref:       commit,
+		Ref:       ref,
 		Packages:  packages,
 		WareHouse: DefaultConfig.WareHouse,
-		NetRC:     "",
+		NetRC:     DefaultConfig.NetRC,
 		Remotes:   DefaultConfig.Remotes,
 	}
 	return []Config{config}
@@ -81,6 +82,9 @@ func ParseJSON(str string) []Config {
 		}
 		if len(configs[i].Remotes) == 0 {
 			configs[i].Remotes = DefaultConfig.Remotes
+		}
+		if configs[i].NetRC == "" {
+			configs[i].NetRC = DefaultConfig.NetRC
 		}
 	}
 	return configs
