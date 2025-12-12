@@ -81,7 +81,7 @@ var cleanCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(cleanCmd)
-	cleanCmd.Flags().String("config", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
-	cleanCmd.Flags().String("procedure", "", "procedure name (required when type=package)")
-	cleanCmd.Flags().String("type", "", "clean type: cache|package|all (required)")
+	cleanCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
+	cleanCmd.Flags().StringP("procedure", "p", "", "procedure name (required when type=package)")
+	cleanCmd.Flags().StringP("type", "t", "", "clean type: cache|package|all (required)")
 }

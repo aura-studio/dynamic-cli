@@ -51,6 +51,6 @@ var pushCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(pushCmd)
-	pushCmd.Flags().String("config", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
-	pushCmd.Flags().String("procedure", "", "procedure name to push (required)")
+	pushCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
+	pushCmd.Flags().StringP("procedure", "p", "", "procedure name to push (required)")
 }
