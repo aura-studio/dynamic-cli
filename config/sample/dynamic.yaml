@@ -1,0 +1,25 @@
+environments:
+  - name: default
+    toolchain:
+      os: linux
+      arch: amd64
+      compiler: go1.18.1
+      variant: plain/debug
+    warehouse:
+      local: /opt/go-dynamic-warehouse
+      remote:
+        - s3://my-dynamic-warehouse
+procedures:
+  - name: auth
+    enviroment: default
+    source:
+      repo: https://github.com/aura-studio/dynamic-cli/sample
+      module: auth
+      version: v0.1.0
+    target:
+      namespace: dynamic
+      package: auth
+      version: latest
+
+
+

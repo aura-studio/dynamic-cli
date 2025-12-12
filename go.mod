@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.18.7
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.29.6
 	github.com/spf13/cobra v1.6.1
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
