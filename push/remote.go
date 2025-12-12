@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
+	"path"
 	"sync"
+
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -19,11 +21,28 @@ type Remote interface {
 
 type S3Remote struct {
 	bucket string
+	prefix string
 }
 
 func NewS3Remote(bucket string) *S3Remote {
+	// Accept values like:
+	// - "mirroring-lambda"
+	// - "mirroring-lambda/prefix/path"
+	// - "s3://mirroring-lambda"
+	// - "s3://mirroring-lambda/prefix/path"
+	// Normalize to bucket + optional prefix for S3 API usage.
+	b := bucket
+	p := ""
+	if strings.HasPrefix(b, "s3://") {
+		b = strings.TrimPrefix(b, "s3://")
+	}
+	if i := strings.IndexByte(b, '/'); i >= 0 {
+		p = strings.Trim(b[i+1:], "/")
+		b = b[:i]
+	}
 	return &S3Remote{
-		bucket: bucket,
+		bucket: b,
+		prefix: p,
 	}
 }
 
@@ -50,9 +69,13 @@ func (r *S3Remote) uploadFileToS3(remoteFilePath string, localFilePath string) e
 	defer f.Close()
 
 	// Upload file body to S3.
+	key := remoteFilePath
+	if r.prefix != "" {
+		key = path.Join(r.prefix, key)
+	}
 	_, err = client.PutObject(context.Background(), &s3.PutObjectInput{
 		Bucket: aws.String(r.bucket),
-		Key:    aws.String(remoteFilePath),
+		Key:    aws.String(key),
 		Body:   f,
 	})
 	if err != nil {
@@ -86,7 +109,12 @@ func (r *S3Remote) batchUploadFilesToS3(pairs []Pair) error {
 				errChan <- err
 				return
 			} else {
-				log.Printf("%s found, uploading to s3://%s...", localFilePath, filepath.Join(r.bucket, remoteFilePath))
+				// Log the full S3 URL for clarity
+				fullKey := remoteFilePath
+				if r.prefix != "" {
+					fullKey = path.Join(r.prefix, remoteFilePath)
+				}
+				log.Printf("%s found, uploading to s3://%s/%s...", localFilePath, r.bucket, fullKey)
 				if err := r.uploadFileToS3(remoteFilePath, localFilePath); err != nil {
 					log.Printf("failed to upload file to s3, %v", err)
 					errChan <- err
