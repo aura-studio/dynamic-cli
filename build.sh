@@ -1,18 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION=$(git rev-parse --short HEAD)
+VERSION_DEFAULT=$(git rev-parse --short HEAD)
+VERSION="${VERSION:-}"
+if [[ -z "$VERSION" ]]; then
+	VERSION="$VERSION_DEFAULT"
+fi
 IMAGE_NAME="dynamic-cli"
 
 usage() {
 	cat <<EOF
-Usage: $(basename "$0") [install|docker|release|help]
+Usage: $(basename "$0") [install|docker|release|help] [--version <v>]
 
 Commands:
 	install   Install the CLI at current git revision
 	docker    Build Docker image with tag :latest and VERSION arg
 	release   Build multi-platform binaries into dist/
 	help      Show this help
+
+Options:
+	--version v  Override version (default: current git short SHA or env VERSION)
 EOF
 }
 
@@ -41,6 +48,17 @@ release() {
 }
 
 cmd="${1:-install}"
+shift || true
+
+# parse optional flags
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		--version)
+			VERSION="$2"; shift 2 ;;
+		*)
+			echo "Unknown option: $1" >&2; usage; exit 1 ;;
+	esac
+done
 case "$cmd" in
 	install)
 		install ;;
