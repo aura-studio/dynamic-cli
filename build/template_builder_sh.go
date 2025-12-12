@@ -1,4 +1,4 @@
-package builder
+package build
 
 func init() {
 	templateMap["{{.House}}/{{.Name}}/builder.sh"] = builderBash
