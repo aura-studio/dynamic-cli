@@ -8,6 +8,7 @@ import (
 	"log"
 	"path/filepath"
 
+	"github.com/aura-studio/dynamic-cli/build"
 	"github.com/aura-studio/dynamic-cli/config"
 	"github.com/spf13/cobra"
 )
@@ -40,15 +41,10 @@ var buildCmd = &cobra.Command{
 		c := config.Parse(cfgPath)
 		config.Validate(c)
 
-		// build object
-		b := config.CreateProcedure(c, proc)
-		// For now, just print summary; integration with builder can follow
-		fmt.Printf("Build plan:\nToolchain: %s/%s %s (%s)\nWarehouse: %s -> %v\nSource: %s %s@%s\nTarget: %s %s@%s\n",
-			b.Toolchain.OS, b.Toolchain.Arch, b.Toolchain.Compiler, b.Toolchain.Variant,
-			b.Warehouse.Local, b.Warehouse.Remote,
-			b.Source.Repo, b.Source.Module, b.Source.Version,
-			b.Target.Namespace, b.Target.Package, b.Target.Version,
-		)
+		// compose procedure and call build entry
+		procObj := config.CreateProcedure(c, proc)
+		build.BuildForProcedure(procObj)
+		fmt.Println("build: invoked BuildForProcedure")
 	},
 }
 

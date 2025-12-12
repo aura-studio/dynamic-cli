@@ -1,3 +1,5 @@
-1.将builder cleaner pusher 三个模块的模块明改为build clean push，以保持和cmd目录下命令一致。
 
-2. 三个模块分别调用config.CreateProcedure函数来创建procedure对象，然后使用build.BuildForProcedure,clean.CleanForProcedure, push.PushForProcedure函数来执行相应的操作。
+
+在build文件夹中，新增build.go文件，然后创建BuildForProcedure空函数，用于接收config.CreateProcedure函数创建的procedure对象，然后在cmd/build.go中调用build.BuildForProcedure函数来执行构建操作。
+
+对clean和push命令也执行类似的修改，分别在clean和push文件夹中新增clean.go和push.go文件，创建CleanForProcedure和PushForProcedure空函数，然后在cmd/clean.go和cmd/push.go中调用相应的函数来执行清理和推送操作。

@@ -8,6 +8,7 @@ import (
 	"log"
 	"path/filepath"
 
+	"github.com/aura-studio/dynamic-cli/clean"
 	"github.com/aura-studio/dynamic-cli/config"
 	"github.com/spf13/cobra"
 )
@@ -40,13 +41,10 @@ var cleanCmd = &cobra.Command{
 		c := config.Parse(cfgPath)
 		config.Validate(c)
 
-		// build object based on procedure
-		b := config.CreateProcedure(c, proc)
-		// For now, just print what would be cleaned based on target/warehouse
-		fmt.Printf("Clean plan:\nWarehouse: %s\nTarget Dir Pattern: %s_%s\n",
-			b.Warehouse.Local,
-			b.Target.Package, b.Target.Version,
-		)
+		// compose procedure and call clean entry
+		procObj := config.CreateProcedure(c, proc)
+		clean.CleanForProcedure(procObj)
+		fmt.Println("clean: invoked CleanForProcedure")
 	},
 }
 

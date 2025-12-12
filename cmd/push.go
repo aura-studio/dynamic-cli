@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/aura-studio/dynamic-cli/config"
+	"github.com/aura-studio/dynamic-cli/push"
 	"github.com/spf13/cobra"
 )
 
@@ -41,13 +42,10 @@ var pushCmd = &cobra.Command{
 		config.Validate(c)
 
 		// build object based on procedure
-		b := config.CreateProcedure(c, proc)
-		// For now, just print push plan
-		fmt.Printf("Push plan:\nWarehouse local: %s\nWarehouse remote: %v\nArtifact: namespace=%s package=%s version=%s\n",
-			b.Warehouse.Local,
-			b.Warehouse.Remote,
-			b.Target.Namespace, b.Target.Package, b.Target.Version,
-		)
+		// compose procedure and call push entry
+		procObj := config.CreateProcedure(c, proc)
+		push.PushForProcedure(procObj)
+		fmt.Println("push: invoked PushForProcedure")
 	},
 }
 
