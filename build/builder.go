@@ -23,6 +23,9 @@ type RenderData struct {
 	Environment string
 	Variant     string
 	Dir         string
+	OS          string
+	Arch        string
+	Compiler    string
 }
 
 type Builder struct {

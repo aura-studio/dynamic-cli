@@ -31,6 +31,9 @@ func BuildForProcedure(proc config.Procedure) {
 		House:       house,
 		Environment: env,
 		Variant:     variant,
+		OS:          proc.Toolchain.OS,
+		Arch:        proc.Toolchain.Arch,
+		Compiler:    proc.Toolchain.Compiler,
 		Dir:         dir,
 	}
 

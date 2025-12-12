@@ -10,6 +10,21 @@ cd {{.Dir}}
 export CGO_ENABLED=1
 export GO111MODULE=on
 export GOPRIVATE={{.Module}}
+expected_os="{{.OS}}"
+expected_arch="{{.Arch}}"
+expected_compiler="{{.Compiler}}"
+
+# Detect actual environment via go env
+actual_os=$(go env GOOS 2>/dev/null)
+actual_arch=$(go env GOARCH 2>/dev/null)
+actual_compiler=$(go env GOVERSION 2>/dev/null)
+
+if [ "$actual_os" != "$expected_os" ] || [ "$actual_arch" != "$expected_arch" ] || [ "$actual_compiler" != "$expected_compiler" ]; then
+	echo "Environment mismatch" >&2
+	echo "  expected: OS=$expected_os ARCH=$expected_arch COMPILER=$expected_compiler" >&2
+	echo "  actual:   OS=$actual_os ARCH=$actual_arch COMPILER=$actual_compiler" >&2
+	exit 1
+fi
 go clean --modcache
 go mod tidy
 {{if eq .Variant "plain"}}
