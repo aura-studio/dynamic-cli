@@ -28,28 +28,60 @@ var cleanCmd = &cobra.Command{
 			cfgPath = filepath.Join(".", "dynamic.yaml")
 		}
 
-		// required procedure name
+		// clean type
+		t, err := cmd.Flags().GetString("type")
+		if err != nil {
+			log.Panic(err)
+		}
+		if t == "" {
+			log.Panic("clean type is required: cache|package|all")
+		}
+		var ct clean.CleanType
+		switch t {
+		case "cache":
+			ct = clean.CleanTypeCache
+		case "package":
+			ct = clean.CleanTypePackage
+		case "all":
+			ct = clean.CleanTypeAll
+		default:
+			log.Panic("invalid clean type: " + t)
+		}
+
+		// procedure required when type=package
 		proc, err := cmd.Flags().GetString("procedure")
 		if err != nil {
 			log.Panic(err)
 		}
-		if proc == "" {
-			log.Panic("procedure is required")
+		if ct == clean.CleanTypePackage && proc == "" {
+			log.Panic("procedure is required when type=package")
 		}
 
 		// parse and validate
 		c := config.Parse(cfgPath)
 		config.Validate(c)
 
-		// compose procedure and call clean entry
-		procObj := config.CreateProcedure(c, proc)
-		clean.CleanForProcedure(procObj)
-		fmt.Println("clean: invoked CleanForProcedure")
+		// compose procedure when needed and call clean entry
+		var procObj config.Procedure
+		if ct == clean.CleanTypePackage || ct == clean.CleanTypeCache {
+			procObj = config.CreateProcedure(c, proc)
+		} else {
+			// for all, a dummy procedure with warehouse local is sufficient
+			// but CreateProcedure enforces name; use provided or pick first
+			if proc == "" && len(c.Procedures) > 0 {
+				procObj = config.CreateProcedure(c, c.Procedures[0].Name)
+			} else if proc != "" {
+				procObj = config.CreateProcedure(c, proc)
+			}
+		}
+		clean.CleanForProcedure(procObj, ct)
+		fmt.Println("clean: done")
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(cleanCmd)
 	cleanCmd.Flags().String("config", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
-	cleanCmd.Flags().String("procedure", "", "procedure name to clean (required)")
+	cleanCmd.Flags().String("procedure", "", "procedure name (required when type=package)")
+	cleanCmd.Flags().String("type", "", "clean type: cache|package|all (required)")
 }

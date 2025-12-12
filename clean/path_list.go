@@ -1,10 +1,7 @@
 package clean
 
 import (
-	"fmt"
 	"path/filepath"
-	"runtime"
-	"strings"
 
 	"github.com/aura-studio/dynamic-cli/config"
 )
@@ -23,45 +20,21 @@ func (f *PathList) AddFile(file string) {
 	f.Files = append(f.Files, file)
 }
 
-func NewPathList(c config.Config) *PathList {
-	pathList := &PathList{
-		WareHouse: c.WareHouse,
-		Dirs:      make([]string, 0),
-		Files:     make([]string, 0),
+// NewPathListForProcedure constructs paths aligned with Procedure-based build outputs.
+// Dir = Warehouse.Local / OS_Arch_Compiler_Variant / Namespace_Package_Version
+// Files include libcgo_<name>.so and libgo_<name>.so under Dir.
+func NewPathListForProcedure(proc config.Procedure) *PathList {
+	name := proc.Target.Namespace + "_" + proc.Target.Package + "_" + proc.Target.Version
+	env := proc.Toolchain.OS + "_" + proc.Toolchain.Arch + "_" + proc.Toolchain.Compiler + "_" + proc.Toolchain.Variant
+	dir := filepath.Join(proc.Warehouse.Local, env, name)
+
+	pl := &PathList{
+		WareHouse: proc.Warehouse.Local,
+		Dirs:      []string{dir},
+		Files: []string{
+			filepath.Join(dir, "libcgo_"+name+".so"),
+			filepath.Join(dir, "libgo_"+name+".so"),
+		},
 	}
-
-	if len(c.Packages) == 0 {
-		pkg := c.Path[strings.LastIndex(c.Path, "/")+1:]
-		name := pkg
-		if len(c.Namespace) > 0 {
-			name = strings.Join([]string{c.Namespace, pkg}, "_")
-		}
-
-		dir := fmt.Sprintf("%s_%s", name, c.Ref)
-		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Ref, name, c.Ref)
-		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Ref, name, c.Ref)
-
-		pathList.AddDir(filepath.Join(c.WareHouse, runtime.Version(), dir))
-		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libcgo))
-		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libgo))
-
-		return pathList
-	}
-
-	for _, pkg := range c.Packages {
-		name := pkg[strings.LastIndex(pkg, "/")+1:]
-		if len(c.Namespace) > 0 {
-			name = strings.Join([]string{c.Namespace, name}, "_")
-		}
-
-		dir := fmt.Sprintf("%s_%s", name, c.Ref)
-		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Ref, name, c.Ref)
-		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Ref, name, c.Ref)
-
-		pathList.AddDir(filepath.Join(c.WareHouse, runtime.Version(), dir))
-		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libcgo))
-		pathList.AddFile(filepath.Join(c.WareHouse, runtime.Version(), libgo))
-	}
-
-	return pathList
+	return pl
 }
