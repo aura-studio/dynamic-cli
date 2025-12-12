@@ -12,7 +12,6 @@ type Procedure struct {
 		Remote []string `yaml:"remote"`
 	} `yaml:"warehouse"`
 	Source struct {
-		Repo    string `yaml:"repo"`
 		Module  string `yaml:"module"`
 		Version string `yaml:"version"`
 	} `yaml:"source"`
@@ -66,7 +65,6 @@ func CreateProcedure(c Config, procedureName string) Procedure {
 	b.Warehouse.Local = e.Warehouse.Local
 	b.Warehouse.Remote = append(b.Warehouse.Remote, e.Warehouse.Remote...)
 
-	b.Source.Repo = p.Source.Repo
 	b.Source.Module = p.Source.Module
 	b.Source.Version = p.Source.Version
 

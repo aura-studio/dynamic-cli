@@ -10,11 +10,11 @@ environments:
       remote:
         - s3://mirroring-lambda
 procedures:
-  - name:
-    enviroment: default
+  - name: brazil
+    environment: default
     source:
       module: codeup.aliyun.com/mirror/admin/admin-api/route
-      version: master
+      version: brazil
     target:
       namespace: admin
       package: route

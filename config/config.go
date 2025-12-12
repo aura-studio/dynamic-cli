@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"regexp"
 
@@ -15,7 +16,7 @@ type Config struct {
 			Arch     string `yaml:"arch"`
 			Compiler string `yaml:"compiler"`
 			Variant  string `yaml:"variant"`
-		} `yaml:"Toolchain"`
+		} `yaml:"toolchain"`
 		Warehouse struct {
 			Local  string   `yaml:"local"`
 			Remote []string `yaml:"remote"`
@@ -26,7 +27,6 @@ type Config struct {
 		Name        string `yaml:"name"`
 		Environment string `yaml:"environment"`
 		Source      struct {
-			Repo    string `yaml:"repo"`
 			Module  string `yaml:"module"`
 			Version string `yaml:"version"`
 		} `yaml:"source"`
@@ -49,6 +49,7 @@ func Parse(file string) Config {
 	if err := yaml.Unmarshal(data, &config); err != nil {
 		panic(err)
 	}
+	fmt.Println(config)
 	return config
 }
 
@@ -107,7 +108,7 @@ func Validate(c Config) {
 			panic("config: procedures[" + itoa(i) + "].environment not found in environments")
 		}
 		// source
-		if p.Source.Repo == "" || p.Source.Module == "" || p.Source.Version == "" {
+		if p.Source.Module == "" || p.Source.Version == "" {
 			panic("config: procedures[" + itoa(i) + "] source fields must not be empty")
 		}
 		// target validation: only allowed characters
