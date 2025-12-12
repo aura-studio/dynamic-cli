@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/config"
@@ -26,71 +25,43 @@ func (f *TaskList) Add(remote string, remoteFilePath string, localFilePath strin
 	})
 }
 
-func NewTaskList(c config.Config) *TaskList {
-	fileList := &TaskList{
-		Tasks: make(map[string][]Pair),
-	}
+func NewTaskList(proc config.Procedure) *TaskList {
+	fileList := &TaskList{Tasks: make(map[string][]Pair)}
 
-	if len(c.Packages) == 0 {
-		pkg := c.Path[strings.LastIndex(c.Path, "/")+1:]
-		name := pkg
-		if len(c.Namespace) > 0 {
-			name = strings.Join([]string{c.Namespace, pkg}, "_")
-		}
-		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Ref, name, c.Ref)
-		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Ref, name, c.Ref)
+	// Compose name/env/dir consistent with build
+	name := proc.Target.Namespace + "_" + proc.Target.Package + "_" + proc.Target.Version
+	env := proc.Toolchain.OS + "_" + proc.Toolchain.Arch + "_" + proc.Toolchain.Compiler + "_" + proc.Toolchain.Variant
+	dir := filepath.Join(proc.Warehouse.Local, env, name)
 
-		for _, remote := range c.Remotes {
-			if err := filepath.WalkDir(c.WareHouse, func(path string, d fs.DirEntry, err error) error {
-				if err != nil {
-					return err
-				}
-				if d.IsDir() {
-					return nil
-				}
-				if strings.Contains(path, libcgo) {
-					index := strings.Index(path, libcgo)
-					fileList.Add(remote, filepath.Join(runtime.Version(), path[index:]), path)
-				}
-				if strings.Contains(path, libgo) {
-					index := strings.Index(path, libgo)
-					fileList.Add(remote, filepath.Join(runtime.Version(), path[index:]), path)
-				}
-				return nil
-			}); err != nil {
-				panic(err)
+	// Expected filenames under dir
+	libcgoName := fmt.Sprintf("libcgo_%s.so", name)
+	libgoName := fmt.Sprintf("libgo_%s.so", name)
+
+	for _, remote := range proc.Warehouse.Remote {
+		if err := filepath.WalkDir(proc.Warehouse.Local, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
 			}
-		}
-		return fileList
-	}
-
-	for _, pkg := range c.Packages {
-		name := pkg[strings.LastIndex(pkg, "/")+1:]
-		if len(c.Namespace) > 0 {
-			name = strings.Join([]string{c.Namespace, name}, "_")
-		}
-		libcgo := fmt.Sprintf("%s_%s/libcgo_%s_%s.so", name, c.Ref, name, c.Ref)
-		libgo := fmt.Sprintf("%s_%s/libgo_%s_%s.so", name, c.Ref, name, c.Ref)
-		for _, remote := range c.Remotes {
-			if err := filepath.WalkDir(c.WareHouse, func(path string, d fs.DirEntry, err error) error {
-				if err != nil {
-					return err
-				}
-				if d.IsDir() {
-					return nil
-				}
-				if strings.Contains(path, libcgo) {
-					index := strings.Index(path, libcgo)
-					fileList.Add(remote, filepath.Join(runtime.Version(), path[index:]), path)
-				}
-				if strings.Contains(path, libgo) {
-					index := strings.Index(path, libgo)
-					fileList.Add(remote, filepath.Join(runtime.Version(), path[index:]), path)
-				}
+			if d.IsDir() {
 				return nil
-			}); err != nil {
-				panic(err)
 			}
+			// Only consider files inside the expected dir
+			if !strings.HasPrefix(path, dir) {
+				return nil
+			}
+			base := filepath.Base(path)
+			// match primary and timestamped backups
+			if base == libcgoName || strings.HasPrefix(base, libcgoName+".") || base == libgoName || strings.HasPrefix(base, libgoName+".") {
+				rel, relErr := filepath.Rel(proc.Warehouse.Local, path)
+				if relErr != nil {
+					return relErr
+				}
+				remotePath := filepath.ToSlash(rel)
+				fileList.Add(remote, remotePath, path)
+			}
+			return nil
+		}); err != nil {
+			panic(err)
 		}
 	}
 

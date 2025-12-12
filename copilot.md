@@ -1,4 +1,6 @@
 # 任务列表
 
-* 在template_builder_sh.go文件中，根据Varian的值，使用jenja2语法生成不同的gobuild语句，当前仅支持plain，也就是当前的build形式
-* so的备份过程中，时间戳没有添加时区，且日期和时间的区分不够明显，修改成更加友好的格式。
+* pusher模块中，根据Procedure的格式，生成NewTaskList，重新修改NewTaskList函数
+* pusher模块中，修改PushForProcedure，根据NewTaskList生成的任务列表，执行任务
+* build模块会按照builder.sh的语法生成四个文件，task_list需要能按照规则正确检索到这四个文件，并推送到对应的远程仓库
+* runtime.Version() 不要出现在路径中

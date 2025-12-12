@@ -3,7 +3,10 @@ package push
 import "github.com/aura-studio/dynamic-cli/config"
 
 // PushForProcedure executes push operations for a given procedure.
-// Stub implementation; integration will follow.
 func PushForProcedure(proc config.Procedure) {
-	_ = proc
+	tl := NewTaskList(proc)
+	for remote, tasks := range tl.Tasks {
+		r := NewS3Remote(remote)
+		r.Push(tasks)
+	}
 }
