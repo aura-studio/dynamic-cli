@@ -6,7 +6,9 @@ func init() {
 
 const templateGoMod = `module dynamicbuilder
 
-go 1.18
+go 1.21
+
+toolchain {{.Compiler}}
 
 require (
 	{{.Module}} {{.Version}}

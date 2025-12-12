@@ -1,8 +1,8 @@
 package build
 
 import (
-	"io"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"os/user"
