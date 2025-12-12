@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/aura-studio/dynamic-cli/config"
@@ -22,7 +22,8 @@ var pushCmd = &cobra.Command{
 		// resolve dynamic.yaml path: --config > current directory
 		cfgPath, err := cmd.Flags().GetString("config")
 		if err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 		if cfgPath == "" {
 			cfgPath = filepath.Join(".", "dynamic.yaml")
@@ -31,10 +32,12 @@ var pushCmd = &cobra.Command{
 		// required procedure name
 		proc, err := cmd.Flags().GetString("procedure")
 		if err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 		if proc == "" {
-			log.Panic("procedure is required")
+			fmt.Println("error: procedure is required")
+			os.Exit(1)
 		}
 
 		// parse and validate

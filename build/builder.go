@@ -2,7 +2,7 @@ package build
 
 import (
 	"io"
-	"log"
+	"fmt"
 	"os"
 	"os/exec"
 	"os/user"
@@ -38,7 +38,8 @@ type Builder struct {
 func New(c *RenderData) *Builder {
 	user, err := user.Current()
 	if err != nil {
-		log.Panic(err)
+		fmt.Println("error:", err)
+		os.Exit(1)
 	}
 
 	// Determine netrc path cross-platform
@@ -57,8 +58,8 @@ func New(c *RenderData) *Builder {
 }
 
 func (b *Builder) Build() {
-	log.Println("start...")
-	defer log.Println("done!")
+	fmt.Println("start...")
+	defer fmt.Println("done!")
 
 	// Use netrc content from env when provided
 	netrc := os.Getenv("DYNAMIC_CLI_NETRC")
@@ -74,34 +75,38 @@ func (b *Builder) Build() {
 
 // bakNetRC backup netrc file if exsits
 func (b *Builder) bakNetRC() {
-	log.Println("bakup", b.netRCPath)
+	fmt.Println("bakup", b.netRCPath)
 	if _, err := os.Stat(b.netRCPath); err == nil {
 		if err := os.Rename(b.netRCPath, b.netRCBakPath); err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 	}
 }
 
 // writeNetRC write netrc file from Builder.config.NetRC
 func (b *Builder) writeNetRC(netrc string) {
-	log.Println("write", b.netRCPath)
+	fmt.Println("write", b.netRCPath)
 	f, err := os.Create(b.netRCPath)
 	if err != nil {
-		log.Panic(err)
+		fmt.Println("error:", err)
+		os.Exit(1)
 	}
 	defer f.Close()
 
 	if _, err := f.WriteString(netrc); err != nil {
-		log.Panic(err)
+		fmt.Println("error:", err)
+		os.Exit(1)
 	}
 }
 
 // restoreNetRC restore netrc file if exsits
 func (b *Builder) restoreNetRC() {
-	log.Println("restore", b.netRCPath)
+	fmt.Println("restore", b.netRCPath)
 	if _, err := os.Stat(b.netRCBakPath); err == nil {
 		if err := os.Rename(b.netRCBakPath, b.netRCPath); err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 	}
 }
@@ -111,33 +116,40 @@ func (b *Builder) generate() {
 	for pathTemplateStr, textTemplateStr := range templateMap {
 		var pathBuilder strings.Builder
 		if pathTemplate, err := template.New("dynamic").Parse(pathTemplateStr); err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		} else if err := pathTemplate.Execute(&pathBuilder, b.config); err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 
 		path := pathBuilder.String()
-		log.Println("generate", path)
+		fmt.Println("generate", path)
 		if _, err := os.Stat(filepath.Dir(path)); err != nil {
 			if os.IsNotExist(err) {
 				if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-					log.Panic(err)
+					fmt.Println("error:", err)
+					os.Exit(1)
 				}
 			} else {
-				log.Panic(err)
+				fmt.Println("error:", err)
+				os.Exit(1)
 			}
 		}
 
 		f, err := os.OpenFile(path, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0755)
 		if err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 		defer f.Close()
 
 		if textTemplate, err := template.New("dynamic").Parse(textTemplateStr); err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		} else if err := textTemplate.Execute(f, b.config); err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 	}
 }
@@ -145,7 +157,8 @@ func (b *Builder) generate() {
 // runBuilder run ./builder.sh
 func (b *Builder) runBuilder() {
 	if err := os.Chmod(filepath.Join(b.config.Dir, "builder.sh"), 0755); err != nil {
-		log.Panic(err)
+		fmt.Println("error:", err)
+		os.Exit(1)
 	}
 
 	cmd := exec.Command("sh", "-c", "./builder.sh")
@@ -158,16 +171,19 @@ func (b *Builder) runBuilder() {
 	builderPath := filepath.Join(cmd.Dir, "builder.sh")
 	builderFile, err := os.Open(builderPath)
 	if err != nil {
-		log.Panic(err)
+		fmt.Println("error:", err)
+		os.Exit(1)
 	}
 	builderContent, err := io.ReadAll(builderFile)
 	if err != nil {
-		log.Panic(err)
+		fmt.Println("error:", err)
+		os.Exit(1)
 	}
-	log.Printf("exec builder.sh\n================\n%s================\n", string(builderContent))
+	fmt.Printf("exec builder.sh\n================\n%s================\n", string(builderContent))
 	builderFile.Close()
 
 	if err := cmd.Run(); err != nil {
-		log.Panic(err)
+		fmt.Println("error:", err)
+		os.Exit(1)
 	}
 }

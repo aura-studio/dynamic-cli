@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/aura-studio/dynamic-cli/clean"
@@ -22,7 +22,8 @@ var cleanCmd = &cobra.Command{
 		// resolve dynamic.yaml path: --config > current directory
 		cfgPath, err := cmd.Flags().GetString("config")
 		if err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 		if cfgPath == "" {
 			cfgPath = filepath.Join(".", "dynamic.yaml")
@@ -31,10 +32,12 @@ var cleanCmd = &cobra.Command{
 		// clean type
 		t, err := cmd.Flags().GetString("type")
 		if err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 		if t == "" {
-			log.Panic("clean type is required: cache|package|all")
+			fmt.Println("error: clean type is required: cache|package|all")
+			os.Exit(1)
 		}
 		var ct clean.CleanType
 		switch t {
@@ -45,16 +48,19 @@ var cleanCmd = &cobra.Command{
 		case "all":
 			ct = clean.CleanTypeAll
 		default:
-			log.Panic("invalid clean type: " + t)
+			fmt.Println("error: invalid clean type:", t)
+			os.Exit(1)
 		}
 
 		// procedure required when type=package
 		proc, err := cmd.Flags().GetString("procedure")
 		if err != nil {
-			log.Panic(err)
+			fmt.Println("error:", err)
+			os.Exit(1)
 		}
 		if ct == clean.CleanTypePackage && proc == "" {
-			log.Panic("procedure is required when type=package")
+			fmt.Println("error: procedure is required when type=package")
+			os.Exit(1)
 		}
 
 		// parse and validate
