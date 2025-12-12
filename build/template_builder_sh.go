@@ -5,6 +5,7 @@ func init() {
 }
 
 const templateBuilderSh = `#!/bin/sh
+mkdir -p {{.Dir}}
 cd {{.Dir}}
 export CGO_ENABLED=1
 export GO111MODULE=on
