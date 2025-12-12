@@ -29,5 +29,8 @@ func (t tunnel) Close() {
 	C.dynamic_cgo_{{.Name}}_close()
 }
 
-var Tun
+var Tunnel tunnel
+
+func main() {}
+`
 }

@@ -1,10 +1,7 @@
 package build
 
 func init() {
-	templateMap["{{.Dir}}/builder.sh"] = builderBash
-}
-
-const builderBash = `#!/bin/sh
+	templateMap["{{.Dir}}/builder.sh"] = `#!/bin/sh
 cd {{.Dir}}
 export CGO_ENABLED=1
 export GO111MODULE=on
