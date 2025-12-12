@@ -1,8 +1,10 @@
 package build
 
 func init() {
-	templateMap["{{.Dir}}/libgo_{{.Name}}/libgo.go"] = `package main
+	templateMap["{{.Dir}}/libgo_{{.Name}}/libgo.go"] = templateLibgoGo
+}
 
+const templateLibgoGo = `package main
 /*
 #cgo CFLAGS: -I{{.Dir}}/
 #cgo LDFLAGS: -L{{.Dir}}/ -lcgo_{{.Name}}
@@ -33,4 +35,3 @@ var Tunnel tunnel
 
 func main() {}
 `
-}

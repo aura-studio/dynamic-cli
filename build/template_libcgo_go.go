@@ -1,7 +1,10 @@
 package build
 
 func init() {
-	templateMap["{{.Dir}}/libcgo_{{.Name}}/libcgo.go"] = `package main
+	templateMap["{{.Dir}}/libcgo_{{.Name}}/libcgo.go"] = templateLibcgoGo
+}
+
+const templateLibcgoGo = `package main
 
 /*
 #include <stdlib.h>
@@ -38,4 +41,3 @@ func dynamic_cgo_{{.Name}}_close() {
 
 func main() {}
 `
-}

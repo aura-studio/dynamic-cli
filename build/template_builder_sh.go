@@ -1,7 +1,10 @@
 package build
 
 func init() {
-	templateMap["{{.Dir}}/builder.sh"] = `#!/bin/sh
+	templateMap["{{.Dir}}/builder.sh"] = templateBuilderSh
+}
+
+const templateBuilderSh = `#!/bin/sh
 cd {{.Dir}}
 export CGO_ENABLED=1
 export GO111MODULE=on
@@ -23,4 +26,3 @@ ts=$(date "+%Y-%m-%dT%H:%M:%S%z")
 cp -rf {{.Dir}}/libgo_{{.Name}}.so {{.Dir}}/libgo_{{.Name}}.so.$ts
 cp -rf {{.Dir}}/libcgo_{{.Name}}.so {{.Dir}}/libcgo_{{.Name}}.so.$ts
 `
-}
