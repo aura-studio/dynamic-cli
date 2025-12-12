@@ -6,5 +6,7 @@ func init() {
 go 1.18
 
 require (
-	{{.Module}} {{.Version}
+	{{.Module}} {{.Version}}
+)
+`
 }
