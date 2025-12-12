@@ -33,9 +33,5 @@ func dynamic_cgo_{{.Name}}_invoke(route_cstr *C.char, req_cstr *C.char) *C.char 
 
 //export dynamic_cgo_{{.Name}}_close
 func dynamic_cgo_{{.Name}}_close() {
-	tunnel.Close()
-}
-
-func main() {}
-`
+	tu
 }
