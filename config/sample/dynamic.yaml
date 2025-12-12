@@ -3,7 +3,7 @@ environments:
     toolchain:
       os: linux
       arch: amd64
-      compiler: go1.18.1
+      compiler: go1.22.1
       variant: plain
     warehouse:
       local: /tmp/warehouse
