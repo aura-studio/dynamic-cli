@@ -1,8 +1,4 @@
-# BuildForProcedure中，从Procedure结构构造RenderData结构
+# 任务列表
 
-* Name由Target的Namespace，Package，Version通过下划线连接而成
-* Module由Source的Module直接赋值
-* Version由Source的Version直接赋值
-* Dir由三部分使用/组成，第一部分是House，由 Warehouse的Local直接赋值，第二部分是Enviroment，Enviroment由Toolchain的OS，Arch，Compiler, Varian通过下划线连接而成, 第三部分是Name,由Target的Namespace，Package，Version通过下划线连接而成
-* Variant由Toolchain的Variant直接赋值
-* 其他没有提及的字段删除
+* 将render_data 合并到 builder.go中
+* 从DYNAMIC_CLI_NETRC中获取netrc的值，如果不为空，则执行netrc备份，写入，及还原操作。

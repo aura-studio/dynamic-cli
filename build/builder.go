@@ -7,11 +7,22 @@ import (
 	"os/exec"
 	"os/user"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"text/template"
 )
 
 var templateMap = map[string]string{}
+
+type RenderData struct {
+	Name        string
+	Module      string
+	Version     string
+	House       string
+	Environment string
+	Variant     string
+	Dir         string
+}
 
 type Builder struct {
 	config       *RenderData
@@ -25,11 +36,19 @@ func New(c *RenderData) *Builder {
 	if err != nil {
 		log.Panic(err)
 	}
+
+	// Determine netrc path cross-platform
+	var netrcName string
+	if runtime.GOOS == "windows" {
+		netrcName = "_netrc"
+	} else {
+		netrcName = ".netrc"
+	}
 	return &Builder{
 		config:       c,
 		user:         user,
-		netRCPath:    filepath.Join(user.HomeDir, ".netrc"),
-		netRCBakPath: filepath.Join(user.HomeDir, ".netrc.go_dynamic_bak"),
+		netRCPath:    filepath.Join(user.HomeDir, netrcName),
+		netRCBakPath: filepath.Join(user.HomeDir, netrcName+".go_dynamic_bak"),
 	}
 }
 
@@ -37,9 +56,13 @@ func (b *Builder) Build() {
 	log.Println("start...")
 	defer log.Println("done!")
 
-	b.bakNetRC()
-	b.writeNetRC()
-	defer b.restoreNetRC()
+	// Use netrc content from env when provided
+	netrc := os.Getenv("DYNAMIC_CLI_NETRC")
+	if strings.TrimSpace(netrc) != "" {
+		b.bakNetRC()
+		b.writeNetRC(netrc)
+		defer b.restoreNetRC()
+	}
 
 	b.generate()
 	b.runBuilder()
@@ -56,7 +79,7 @@ func (b *Builder) bakNetRC() {
 }
 
 // writeNetRC write netrc file from Builder.config.NetRC
-func (b *Builder) writeNetRC() {
+func (b *Builder) writeNetRC(netrc string) {
 	log.Println("write", b.netRCPath)
 	f, err := os.Create(b.netRCPath)
 	if err != nil {
@@ -64,7 +87,7 @@ func (b *Builder) writeNetRC() {
 	}
 	defer f.Close()
 
-	if _, err := f.WriteString(b.config.NetRC); err != nil {
+	if _, err := f.WriteString(netrc); err != nil {
 		log.Panic(err)
 	}
 }
@@ -117,12 +140,12 @@ func (b *Builder) generate() {
 
 // runBuilder run ./builder.sh
 func (b *Builder) runBuilder() {
-	if err := os.Chmod(filepath.Join(b.config.House, b.config.Name, "builder.sh"), 0755); err != nil {
+	if err := os.Chmod(filepath.Join(b.config.Dir, "builder.sh"), 0755); err != nil {
 		log.Panic(err)
 	}
 
 	cmd := exec.Command("sh", "-c", "./builder.sh")
-	cmd.Dir = filepath.Join(b.config.House, b.config.Name)
+	cmd.Dir = b.config.Dir
 	cmd.Env = append(os.Environ(), "USER="+b.user.Username, "HOME="+b.user.HomeDir)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
