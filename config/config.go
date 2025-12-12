@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"regexp"
 
@@ -50,7 +49,6 @@ func Parse(file string) Config {
 	if err := yaml.Unmarshal(data, &config); err != nil {
 		panic(err)
 	}
-	fmt.Println(config)
 	return config
 }
 
