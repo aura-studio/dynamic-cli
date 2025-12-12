@@ -8,10 +8,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// These can be overridden via -ldflags "-X github.com/aura-studio/dynamic-cli/cmd.Version=v1.3.10 -X github.com/aura-studio/dynamic-cli/cmd.Date=<date>"
+// These can be overridden via -ldflags "-X github.com/aura-studio/dynamic-cli/cmd.Version=v1.3.10"
 var (
 	Version = "dev"
-	Date    = "unknown"
 )
 
 var versionCmd = &cobra.Command{
@@ -27,7 +26,6 @@ var versionCmd = &cobra.Command{
 			}
 		}
 		fmt.Printf("Version: %s\n", Version)
-		fmt.Printf("Date:   %s\n", Date)
 		fmt.Printf("Go:     %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	},
 }
