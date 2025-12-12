@@ -1,12 +1,12 @@
 package build
 
 func init() {
-	templateMap["{{.House}}/{{.Name}}/libgo_{{.Name}}/libgo.go"] = `package main
+	templateMap["{{.Dir}}/libgo_{{.Name}}/libgo.go"] = `package main
 
 /*
-#cgo CFLAGS: -I{{.House}}/{{.Name}}/
-#cgo LDFLAGS: -L{{.House}}/{{.Name}}/ -lcgo_{{.Name}}
-#include "{{.House}}/{{.Name}}/libcgo_{{.Name}}.h"
+#cgo CFLAGS: -I{{.Dir}}/
+#cgo LDFLAGS: -L{{.Dir}}/ -lcgo_{{.Name}}
+#include "{{.Dir}}/libcgo_{{.Name}}.h"
 #include "stdlib.h"
 */
 import "C"
@@ -29,8 +29,5 @@ func (t tunnel) Close() {
 	C.dynamic_cgo_{{.Name}}_close()
 }
 
-var Tunnel tunnel
-
-func main() {}
-`
+var Tun
 }

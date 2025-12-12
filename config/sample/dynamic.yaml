@@ -13,8 +13,7 @@ procedures:
   - name: auth
     enviroment: default
     source:
-      repo: https://github.com/aura-studio/dynamic-cli/sample
-      module: auth
+      module: github.com/aura-studio/dynamic-cli/sample/auth
       version: v0.1.0
     target:
       namespace: dynamic

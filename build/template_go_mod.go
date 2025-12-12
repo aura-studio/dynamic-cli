@@ -1,12 +1,10 @@
 package build
 
 func init() {
-	templateMap["{{.House}}/{{.Name}}/go.mod"] = `module dynamicbuilder
+	templateMap["{{.Dir}}/go.mod"] = `module dynamicbuilder
 
-go {{.GoVersion}}
+go 1.18
 
 require (
-	{{.Module}} {{.Version}}
-)
-`
+	{{.Module}} {{.Version}
 }

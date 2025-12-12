@@ -1,90 +1,10 @@
 package build
 
-import (
-	"log"
-	"path/filepath"
-	"runtime"
-	"strings"
-
-	"github.com/aura-studio/dynamic-cli/config"
-)
-
 type RenderData struct {
-	Name        string
-	Version     string
-	Package     string
-	FullPackage string
-	Module      string
-	House       string
-	GoVersion   string
-	NetRC       string
-	LDFlags     string
-}
-
-func (r *RenderData) MustValid(renderData *RenderData) {
-	for _, b := range []byte(r.Name) {
-		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' {
-			continue
-		}
-		log.Panicf("invalid character '%s' in name", string(b))
-	}
-	for _, b := range []byte(r.Version) {
-		if b >= 'a' && b <= 'z' || b >= 'A' && b <= 'Z' || b >= '0' && b <= '9' || b == '_' {
-			continue
-		}
-		log.Panicf("invalid character '%s' in version", string(b))
-	}
-}
-
-func NewRenderData(c config.Config) []*RenderData {
-	ldFlags := ""
-	if !c.Debug {
-		ldFlags += "-s -w " // need an extra space
-	}
-
-	if len(c.Packages) == 0 {
-		packagePath := c.Path
-		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
-		name := strings.Join([]string{packageName, c.Ref}, "_")
-		if len(c.Namespace) > 0 {
-			name = strings.Join([]string{c.Namespace, name}, "_")
-		}
-		renderData := &RenderData{
-			GoVersion:   c.GoVer,
-			Name:        name,
-			Version:     c.Ref,
-			Package:     packageName,
-			FullPackage: c.Path,
-			Module:      c.Path,
-			House:       filepath.Join(c.WareHouse, runtime.Version()),
-			NetRC:       c.NetRC,
-			LDFlags:     ldFlags,
-		}
-		renderData.MustValid(renderData)
-		return []*RenderData{renderData}
-	}
-
-	renderDatas := make([]*RenderData, len(c.Packages))
-	for i, packagePath := range c.Packages {
-		packageName := packagePath[strings.LastIndex(packagePath, "/")+1:]
-		name := strings.Join([]string{packageName, c.Ref}, "_")
-		if len(c.Namespace) > 0 {
-			name = strings.Join([]string{c.Namespace, name}, "_")
-		}
-		renderData := &RenderData{
-			GoVersion:   c.GoVer,
-			Name:        name,
-			Version:     c.Ref,
-			Package:     packageName,
-			FullPackage: strings.Join([]string{c.Path, packagePath}, "/"),
-			Module:      c.Path,
-			House:       filepath.Join(c.WareHouse, runtime.Version()),
-			NetRC:       c.NetRC,
-			LDFlags:     ldFlags,
-		}
-		renderData.MustValid(renderData)
-		renderDatas[i] = renderData
-	}
-
-	return renderDatas
+	Name    string
+	Module  string
+	Version string
+	House   string
+	Variant string
+	Dir     string
 }

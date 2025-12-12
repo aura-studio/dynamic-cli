@@ -1,18 +1,18 @@
 package build
 
 func init() {
-	templateMap["{{.House}}/{{.Name}}/builder.sh"] = builderBash
+	templateMap["{{.Dir}}/builder.sh"] = builderBash
 }
 
 const builderBash = `#!/bin/sh
-cd {{.House}}/{{.Name}}
+cd {{.Dir}}
 export CGO_ENABLED=1
 export GO111MODULE=on
 export GOPRIVATE={{.Module}}
 go clean --modcache
 go mod tidy
-go build -o {{.House}}/{{.Name}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="{{.LDFlags}}" {{.House}}/{{.Name}}/libcgo_{{.Name}}
-go build -o {{.House}}/{{.Name}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="{{.LDFlags}}-r {{.House}}/{{.Name}}/" {{.House}}/{{.Name}}/libgo_{{.Name}}
-cp -rf {{.House}}/{{.Name}}/libgo_{{.Name}}.so {{.House}}/{{.Name}}/libgo_{{.Name}}.so.$(date "+%Y%m%d%H%M%S")
-cp -rf {{.House}}/{{.Name}}/libcgo_{{.Name}}.so {{.House}}/{{.Name}}/libcgo_{{.Name}}.so.$(date "+%Y%m%d%H%M%S")
+go build -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="" {{.Dir}}/libcgo_{{.Name}}
+go build -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-r {{.Dir}}/" {{.Dir}}/libgo_{{.Name}}
+cp -rf {{.Dir}}/libgo_{{.Name}}.so {{.Dir}}/libgo_{{.Name}}.so.$(date "+%Y%m%d%H%M%S")
+cp -rf {{.Dir}}/libcgo_{{.Name}}.so {{.Dir}}/libcgo_{{.Name}}.so.$(date "+%Y%m%d%H%M%S")
 `
