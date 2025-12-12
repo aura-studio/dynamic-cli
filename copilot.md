@@ -1,3 +1,3 @@
 # 任务列表
 
-* 将VERSION转换成参数
+* 修改config里面的校验，Toolchain的字段只能包含字母数字.和-

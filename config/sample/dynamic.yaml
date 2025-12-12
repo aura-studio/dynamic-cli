@@ -4,21 +4,18 @@ environments:
       os: linux
       arch: amd64
       compiler: go1.18.1
-      variant: plain/debug
+      variant: plain
     warehouse:
-      local: /opt/go-dynamic-warehouse
+      local: /tmp/warehouse
       remote:
-        - s3://my-dynamic-warehouse
+        - s3://mirroring-lambda
 procedures:
-  - name: auth
+  - name:
     enviroment: default
     source:
-      module: github.com/aura-studio/dynamic-cli/sample/auth
-      version: v0.1.0
+      module: codeup.aliyun.com/mirror/admin/admin-api/route
+      version: master
     target:
-      namespace: dynamic
-      package: auth
+      namespace: admin
+      package: route
       version: latest
-
-
-

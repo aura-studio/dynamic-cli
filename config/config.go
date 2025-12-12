@@ -56,7 +56,7 @@ func Parse(file string) Config {
 // Rules:
 // 1. All fields must be non-empty.
 // 2. Each procedure.environment must exist in environments names.
-// 3. Toolchain (toolchain.compiler) must match ^[A-Za-z0-9.-]+$.
+// 3. Toolchain fields (os, arch, compiler, variant) must match ^[A-Za-z0-9.-]+$.
 // 4. Target values (namespace, package, version) must match ^[A-Za-z0-9.-]+$.
 func Validate(c Config) {
 	// regex for allowed characters: letters, digits, dash, dot
@@ -75,8 +75,8 @@ func Validate(c Config) {
 		if env.Toolchain.OS == "" || env.Toolchain.Arch == "" || env.Toolchain.Compiler == "" || env.Toolchain.Variant == "" {
 			panic("config: environments[" + itoa(i) + "] toolchain fields must not be empty")
 		}
-		if !allowed.MatchString(env.Toolchain.Compiler) {
-			panic("config: environments[" + itoa(i) + "].toolchain.compiler contains invalid characters")
+		if !allowed.MatchString(env.Toolchain.OS) || !allowed.MatchString(env.Toolchain.Arch) || !allowed.MatchString(env.Toolchain.Compiler) || !allowed.MatchString(env.Toolchain.Variant) {
+			panic("config: environments[" + itoa(i) + "].toolchain fields contain invalid characters (allowed: letters, digits, '.', '-')")
 		}
 		// warehouse
 		if env.Warehouse.Local == "" {
