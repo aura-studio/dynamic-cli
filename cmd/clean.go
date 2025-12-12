@@ -4,10 +4,10 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"log"
-	"strings"
+	"path/filepath"
 
-	"github.com/aura-studio/dynamic-cli/cleaner"
 	"github.com/aura-studio/dynamic-cli/config"
 	"github.com/spf13/cobra"
 )
@@ -15,68 +15,43 @@ import (
 // cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
-	Short: "Clean build files",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Clean using dynamic.yaml and specified procedure",
+	Long:  `Reads dynamic.yaml and the given --procedure, then resolves paths to clean (printing summary for now).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if warehouse, err := cmd.Flags().GetString("warehouse"); err != nil {
-			log.Panic(err)
-		} else if warehouse != "" {
-			config.SetDefaultWareHouse(warehouse)
-		}
-
-		var cleanType = cleaner.CleanTypeCache
-		pkg, err := cmd.Flags().GetBool("package")
+		// resolve dynamic.yaml path: --config > current directory
+		cfgPath, err := cmd.Flags().GetString("config")
 		if err != nil {
 			log.Panic(err)
 		}
-		if pkg {
-			cleanType = cleaner.CleanTypePackage
+		if cfgPath == "" {
+			cfgPath = filepath.Join(".", "dynamic.yaml")
 		}
 
-		all, err := cmd.Flags().GetBool("all")
+		// required procedure name
+		proc, err := cmd.Flags().GetString("procedure")
 		if err != nil {
 			log.Panic(err)
 		}
-		if all {
-			cleanType = cleaner.CleanTypeAll
+		if proc == "" {
+			log.Panic("procedure is required")
 		}
 
-		if len(args) > 0 {
-			if strings.Contains(args[0], "@") {
-				cleaner.CleanFromRepo(cleanType, args[0], args[1:]...)
-				return
-			} else {
-				cleaner.CleanFromJSONDir(cleanType, args[0])
-				return
-			}
-		}
+		// parse and validate
+		c := config.Parse(cfgPath)
+		config.Validate(c)
 
-		if file, err := cmd.Flags().GetString("file"); err != nil {
-			log.Panic(err)
-		} else if file != "" {
-			cleaner.CleanFromJSONFile(cleanType, file)
-			return
-		}
-
-		if dir, err := cmd.Flags().GetString("dir"); err != nil {
-			log.Panic(err)
-		} else if dir != "" {
-			cleaner.CleanFromJSONDir(cleanType, dir)
-			return
-		}
+		// build object based on procedure
+		b := config.BuildForProcedure(c, proc)
+		// For now, just print what would be cleaned based on target/warehouse
+		fmt.Printf("Clean plan:\nWarehouse: %s\nTarget Dir Pattern: %s_%s\n",
+			b.Warehouse.Local,
+			b.Target.Package, b.Target.Version,
+		)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(cleanCmd)
-	cleanCmd.Flags().StringP("file", "f", "/tmp/dynamic.json", "path of config file")
-	cleanCmd.Flags().StringP("dir", "d", "/tmp", "path of config dir")
-	cleanCmd.Flags().StringP("warehouse", "w", "/tmp/warehouse", "path of warehouse")
-	cleanCmd.Flags().BoolP("package", "p", false, "clean package")
-	cleanCmd.Flags().BoolP("all", "a", false, "clean warehouse")
+	cleanCmd.Flags().String("config", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
+	cleanCmd.Flags().String("procedure", "", "procedure name to clean (required)")
 }
