@@ -9,7 +9,9 @@ func BuildForProcedure(proc config.Procedure) {
 	// Name: namespace_package_version with underscores
 	name := proc.Target.Namespace + "_" + proc.Target.Package + "_" + proc.Target.Version
 	// Module: Source.Module
-	pkg := proc.Source.Module
+	mod := proc.Source.Module
+	// Package: Source.Package
+	pkg := proc.Source.Package
 	// Version: Source.Version
 	ver := proc.Source.Version
 	// House: Warehouse.Local
@@ -23,7 +25,8 @@ func BuildForProcedure(proc config.Procedure) {
 
 	rd := &RenderData{
 		Name:        name,
-		Module:      pkg,
+		Module:      mod,
+		Package:     pkg,
 		Version:     ver,
 		House:       house,
 		Environment: env,

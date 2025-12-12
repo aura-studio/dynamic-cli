@@ -17,6 +17,7 @@ var templateMap = map[string]string{}
 type RenderData struct {
 	Name        string
 	Module      string
+	Package     string
 	Version     string
 	House       string
 	Environment string

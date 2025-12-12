@@ -28,6 +28,7 @@ type Config struct {
 		Environment string `yaml:"environment"`
 		Source      struct {
 			Module  string `yaml:"module"`
+			Package string `yaml:"package"`
 			Version string `yaml:"version"`
 		} `yaml:"source"`
 		Target struct {
@@ -108,7 +109,7 @@ func Validate(c Config) {
 			panic("config: procedures[" + itoa(i) + "].environment not found in environments")
 		}
 		// source
-		if p.Source.Module == "" || p.Source.Version == "" {
+		if p.Source.Module == "" || p.Source.Package == "" || p.Source.Version == "" {
 			panic("config: procedures[" + itoa(i) + "] source fields must not be empty")
 		}
 		// target validation: only allowed characters

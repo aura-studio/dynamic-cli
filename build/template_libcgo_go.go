@@ -13,7 +13,7 @@ import "C"
 import (
 	"unsafe"
 
-	src "{{.Module}}"
+	src "{{if eq .Package "."}}{{.Module}}{{else}}{{.Module}}/{{.Package}}{{end}}"
 )
 
 var tunnel = src.Tunnel

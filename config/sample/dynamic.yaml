@@ -13,7 +13,8 @@ procedures:
   - name: brazil
     environment: default
     source:
-      module: codeup.aliyun.com/mirror/admin/admin-api/route
+      module: codeup.aliyun.com/mirror/admin/admin-api
+      package: route
       version: brazil
     target:
       namespace: admin
