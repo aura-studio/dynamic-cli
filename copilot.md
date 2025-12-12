@@ -1,2 +1,3 @@
-参照cmd/build.go,简化cmd/clean,使其只读取dynamic.yaml文件和指定procedure
-参照cmd/build.go,简化cmd/push,使其只读取dynamic.yaml文件和指定procedure
+1.将builder cleaner pusher 三个模块的模块明改为build clean push，以保持和cmd目录下命令一致。
+
+2. 三个模块分别调用config.CreateProcedure函数来创建procedure对象，然后使用build.BuildForProcedure,clean.CleanForProcedure, push.PushForProcedure函数来执行相应的操作。

@@ -41,7 +41,7 @@ var cleanCmd = &cobra.Command{
 		config.Validate(c)
 
 		// build object based on procedure
-		b := config.BuildForProcedure(c, proc)
+		b := config.CreateProcedure(c, proc)
 		// For now, just print what would be cleaned based on target/warehouse
 		fmt.Printf("Clean plan:\nWarehouse: %s\nTarget Dir Pattern: %s_%s\n",
 			b.Warehouse.Local,

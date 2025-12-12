@@ -1,6 +1,6 @@
 package config
 
-type Build struct {
+type Procedure struct {
 	Toolchain struct {
 		OS       string `yaml:"os"`
 		Arch     string `yaml:"arch"`
@@ -23,10 +23,10 @@ type Build struct {
 	} `yaml:"target"`
 }
 
-// BuildForProcedure constructs a Build object from Config by procedure name.
+// CreateProcedure constructs a Build object from Config by procedure name.
 // It looks up the procedure, then uses its environment to fill toolchain and warehouse.
 // Panics if procedure or environment is not found or any required field is empty.
-func BuildForProcedure(c Config, procedureName string) Build {
+func CreateProcedure(c Config, procedureName string) Procedure {
 	if procedureName == "" {
 		panic("build: procedure name must not be empty")
 	}
@@ -57,7 +57,7 @@ func BuildForProcedure(c Config, procedureName string) Build {
 	e := c.Environments[eIdx]
 
 	// compose Build
-	var b Build
+	var b Procedure
 	b.Toolchain.OS = e.Toolchain.OS
 	b.Toolchain.Arch = e.Toolchain.Arch
 	b.Toolchain.Compiler = e.Toolchain.Compiler

@@ -41,7 +41,7 @@ var pushCmd = &cobra.Command{
 		config.Validate(c)
 
 		// build object based on procedure
-		b := config.BuildForProcedure(c, proc)
+		b := config.CreateProcedure(c, proc)
 		// For now, just print push plan
 		fmt.Printf("Push plan:\nWarehouse local: %s\nWarehouse remote: %v\nArtifact: namespace=%s package=%s version=%s\n",
 			b.Warehouse.Local,

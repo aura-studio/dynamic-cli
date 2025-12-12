@@ -41,7 +41,7 @@ var buildCmd = &cobra.Command{
 		config.Validate(c)
 
 		// build object
-		b := config.BuildForProcedure(c, proc)
+		b := config.CreateProcedure(c, proc)
 		// For now, just print summary; integration with builder can follow
 		fmt.Printf("Build plan:\nToolchain: %s/%s %s (%s)\nWarehouse: %s -> %v\nSource: %s %s@%s\nTarget: %s %s@%s\n",
 			b.Toolchain.OS, b.Toolchain.Arch, b.Toolchain.Compiler, b.Toolchain.Variant,
