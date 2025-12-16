@@ -1,7 +1,7 @@
 environments:
   - name: default
     toolchain:
-      os: linux
+      os: ubuntu22.04
       arch: amd64
       compiler: go1.22.1
       variant: generic
