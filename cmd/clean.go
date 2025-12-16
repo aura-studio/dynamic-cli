@@ -81,7 +81,6 @@ var cleanCmd = &cobra.Command{
 			}
 		}
 		clean.CleanForProcedure(procObj, ct)
-		fmt.Println("clean: done")
 	},
 }
 

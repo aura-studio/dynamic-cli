@@ -47,7 +47,6 @@ var buildCmd = &cobra.Command{
 		// compose procedure and call build entry
 		procObj := config.CreateProcedure(c, proc)
 		build.BuildForProcedure(procObj)
-		fmt.Println("build: invoked BuildForProcedure")
 	},
 }
 

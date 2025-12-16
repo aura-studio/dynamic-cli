@@ -48,7 +48,6 @@ var pushCmd = &cobra.Command{
 		// compose procedure and call push entry
 		procObj := config.CreateProcedure(c, proc)
 		push.PushForProcedure(procObj)
-		fmt.Println("push: invoked PushForProcedure")
 	},
 }
 
