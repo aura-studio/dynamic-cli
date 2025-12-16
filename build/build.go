@@ -1,10 +1,20 @@
 package build
 
-import "github.com/aura-studio/dynamic-cli/config"
+import (
+	"fmt"
+
+	"github.com/aura-studio/dynamic-cli/check"
+	"github.com/aura-studio/dynamic-cli/config"
+)
 
 // BuildForProcedure executes build operations for a given procedure.
 // Stub implementation; integration will follow.
 func BuildForProcedure(proc config.Procedure) {
+	if !check.NewChecker(proc).Run() {
+		fmt.Println("Skipping build due to toolchain mismatch.")
+		return
+	}
+
 	// Compose RenderData from Procedure
 	// Name: namespace_package_version with underscores
 	name := proc.Target.Namespace + "_" + proc.Target.Package + "_" + proc.Target.Version
