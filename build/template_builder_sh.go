@@ -4,7 +4,7 @@ func init() {
 	templateMap["{{.Dir}}/builder.sh"] = templateBuilderSh
 }
 
-const templateBuilderSh = `#!/bin/sh
+const templateBuilderSh = `#!/bin/bash
 mkdir -p {{.Dir}}
 cd {{.Dir}}
 export CGO_ENABLED=1
