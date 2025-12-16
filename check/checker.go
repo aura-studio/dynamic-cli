@@ -81,7 +81,7 @@ func (c *Checker) checkCompiler() bool {
 	if c.TargetCompiler == "" {
 		return true
 	}
-	actual := GetComplier()
+	actual := GetCompiler()
 	if actual == "" {
 		warnf("cannot detect GOVERSION (target=%s)", c.TargetCompiler)
 		return false

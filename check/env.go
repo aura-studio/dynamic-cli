@@ -204,8 +204,8 @@ func getGoEnvArchVars() (goEnvArchVars, bool) {
 	return v, true
 }
 
-// GetComplier returns `go env GOVERSION`, e.g. go1.20.5.
-func GetComplier() string {
+// GetCompiler returns `go env GOVERSION`, e.g. go1.20.5.
+func GetCompiler() string {
 	out, err := exec.Command("go", "env", "GOVERSION").Output()
 	if err != nil {
 		return strings.TrimSpace(runtime.Version())

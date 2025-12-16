@@ -77,7 +77,7 @@ func TestGetArch(t *testing.T) {
 }
 
 func TestGetComplier(t *testing.T) {
-	got := strings.TrimSpace(GetComplier())
+	got := strings.TrimSpace(GetCompiler())
 	t.Logf("Detected Compiler Version: %q", got)
 	if got == "" {
 		t.Fatalf("GetComplier() returned empty")
