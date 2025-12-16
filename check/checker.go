@@ -1,10 +1,8 @@
 package check
 
 import (
-	"bufio"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/aura-studio/dynamic-cli/config"
@@ -44,41 +42,40 @@ func (c *Checker) checkOS() bool {
 		return true
 	}
 
-	actualGOOS := strings.ToLower(goEnv("GOOS"))
-	if actualGOOS == "" {
-		warnf("toolchain cannot detect GOOS (target=%s)", c.TargetOS)
+	actualOS := strings.ToLower(strings.TrimSpace(GetOS()))
+	if actualOS == "" {
+		warnf("cannot detect GOOS (target=%s)", c.TargetOS)
 		return false
 	}
 
 	// Generic GOOS match
 	if isGenericGOOS(c.TargetOS) {
 		expected := strings.ToLower(strings.TrimSpace(c.TargetOS))
+		actualGOOS := actualOS
+		// If getOS returns a distro descriptor (e.g. ubuntu22.04), treat it as linux.
+		if !isGenericGOOS(actualGOOS) {
+			actualGOOS = "linux"
+		}
 		if actualGOOS != expected {
-			warnf("toolchain OS mismatch (target=%s actual=%s)", expected, actualGOOS)
+			warnf("OS mismatch (target=%s actual=%s)", expected, actualGOOS)
 			return false
 		}
-		okf("toolchain OS match (target=%s actual=%s)", expected, actualGOOS)
+		okf("OS match (target=%s actual=%s)", expected, actualGOOS)
 		return true
 	}
 
 	// Distro match only on linux
-	if actualGOOS != "linux" {
-		warnf("toolchain OS mismatch (target=%s actual=%s)", c.TargetOS, actualGOOS)
+	if isGenericGOOS(actualOS) {
+		// getOS couldn't detect distro; only got GOOS back.
+		warnf("cannot detect distro version from /etc/os-release (target=%s)", c.TargetOS)
 		return false
 	}
-
-	id, ver := readOSRelease()
-	if id == "" || ver == "" {
-		warnf("toolchain cannot detect distro version from /etc/os-release (target=%s)", c.TargetOS)
-		return false
-	}
-	actual := strings.ToLower(id) + strings.TrimSpace(ver)
 	expected := strings.ToLower(strings.TrimSpace(c.TargetOS))
-	if actual != expected {
-		warnf("toolchain OS mismatch (target=%s actual=%s)", expected, actual)
+	if actualOS != expected {
+		warnf("OS mismatch (target=%s actual=%s)", expected, actualOS)
 		return false
 	}
-	okf("toolchain OS match (target=%s actual=%s)", expected, actual)
+	okf("OS match (target=%s actual=%s)", expected, actualOS)
 	return true
 }
 
@@ -92,9 +89,9 @@ func (c *Checker) checkArch() bool {
 		return true
 	}
 
-	actual := detectArchWithVariant()
+	actual := GetArch()
 	if actual == "" {
-		warnf("toolchain cannot detect arch (target=%s)", c.TargetArch)
+		warnf("cannot detect arch (target=%s)", c.TargetArch)
 		return false
 	}
 
@@ -102,15 +99,15 @@ func (c *Checker) checkArch() bool {
 	actualLower := strings.ToLower(actual)
 
 	if expected == actualLower {
-		okf("toolchain ARCH match (target=%s actual=%s)", expected, actualLower)
+		okf("ARCH match (target=%s actual=%s)", expected, actualLower)
 		return true
 	}
 	// Allow base match
 	if baseArch(actualLower) == expected {
-		okf("toolchain ARCH match (target=%s actual=%s)", expected, actualLower)
+		okf("ARCH match (target=%s actual=%s)", expected, actualLower)
 		return true
 	}
-	warnf("toolchain ARCH mismatch (target=%s actual=%s)", expected, actualLower)
+	warnf("ARCH mismatch (target=%s actual=%s)", expected, actualLower)
 	return false
 }
 
@@ -122,21 +119,21 @@ func (c *Checker) checkCompiler() bool {
 	if c.TargetCompiler == "" {
 		return true
 	}
-	actual := strings.TrimSpace(goEnv("GOVERSION"))
+	actual := GetComplier()
 	if actual == "" {
-		warnf("toolchain cannot detect GOVERSION (target=%s)", c.TargetCompiler)
+		warnf("cannot detect GOVERSION (target=%s)", c.TargetCompiler)
 		return false
 	}
 	expected := strings.TrimSpace(c.TargetCompiler)
 	if actual == expected {
-		okf("toolchain COMPILER match (target=%s actual=%s)", expected, actual)
+		okf("COMPILER match (target=%s actual=%s)", expected, actual)
 		return true
 	}
 	if strings.HasPrefix(actual, expected) {
-		okf("toolchain COMPILER match (target=%s actual=%s)", expected, actual)
+		okf("COMPILER match (target=%s actual=%s)", expected, actual)
 		return true
 	}
-	warnf("toolchain COMPILER mismatch (target=%s actual=%s)", expected, actual)
+	warnf("COMPILER mismatch (target=%s actual=%s)", expected, actual)
 	return false
 }
 
@@ -148,14 +145,6 @@ func okf(format string, args ...any) {
 	fmt.Printf("pass: "+format+"\n", args...)
 }
 
-func goEnv(key string) string {
-	out, err := exec.Command("go", "env", key).Output()
-	if err != nil {
-		return ""
-	}
-	return strings.TrimSpace(string(out))
-}
-
 func isGenericGOOS(osName string) bool {
 	switch strings.ToLower(strings.TrimSpace(osName)) {
 	case "linux", "darwin", "windows":
@@ -163,56 +152,6 @@ func isGenericGOOS(osName string) bool {
 	default:
 		return false
 	}
-}
-
-func readOSRelease() (id, versionID string) {
-	f, err := os.Open("/etc/os-release")
-	if err != nil {
-		return "", ""
-	}
-	defer f.Close()
-
-	m := map[string]string{}
-	sc := bufio.NewScanner(f)
-	for sc.Scan() {
-		line := strings.TrimSpace(sc.Text())
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		k, v, ok := strings.Cut(line, "=")
-		if !ok {
-			continue
-		}
-		m[k] = strings.Trim(v, `"`)
-	}
-	return m["ID"], m["VERSION_ID"]
-}
-
-func detectArchWithVariant() string {
-	goarch := strings.ToLower(goEnv("GOARCH"))
-	if goarch == "" {
-		return ""
-	}
-	if goarch == "arm" {
-		goarm := strings.TrimSpace(goEnv("GOARM"))
-		if goarm != "" {
-			return "armv" + goarm
-		}
-		return "arm"
-	}
-	if goarch == "arm64" {
-		// go env 并不提供 v7/v8 这类子版本，这里仅做尽力推断。
-		// 大多数 arm64 环境等价于 arm64v8。
-		unameOut, err := exec.Command("uname", "-m").Output()
-		if err == nil {
-			m := strings.ToLower(strings.TrimSpace(string(unameOut)))
-			if m == "aarch64" || m == "arm64" {
-				return "arm64v8"
-			}
-		}
-		return "arm64"
-	}
-	return goarch
 }
 func baseArch(arch string) string {
 	arch = strings.ToLower(strings.TrimSpace(arch))
