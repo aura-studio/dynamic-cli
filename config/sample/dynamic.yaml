@@ -4,7 +4,7 @@ environments:
       os: linux
       arch: amd64
       compiler: go1.22.1
-      variant: plain
+      variant: generic
     warehouse:
       local: /tmp/warehouse
       remote:

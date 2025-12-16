@@ -45,11 +45,11 @@ if [ "$actual_os" != "$expected_os" ] || [ "$actual_arch" != "$expected_arch" ] 
 fi
 go clean --modcache
 go mod tidy
-{{if eq .Variant "plain"}}
+{{if eq .Variant "generic"}}
 go build -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="" {{.Dir}}/libcgo_{{.Name}}
 go build -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-r {{.Dir}}/" {{.Dir}}/libgo_{{.Name}}
 {{else}}
-# Unsupported variant: {{.Variant}}. Falling back to plain.
+# Unsupported variant: {{.Variant}}. Falling back to generic.
 go build -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="" {{.Dir}}/libcgo_{{.Name}}
 go build -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-r {{.Dir}}/" {{.Dir}}/libgo_{{.Name}}
 {{end}}
