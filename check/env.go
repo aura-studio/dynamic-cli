@@ -2,28 +2,58 @@ package check
 
 import (
 	"bufio"
+	"encoding/json"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
+	"unicode"
 )
 
 // GetOS returns a best-effort OS descriptor.
 // - On Linux with /etc/os-release: "<id><version_id>" like "ubuntu22.04".
-// - Otherwise: returns GOOS like "linux"/"darwin"/"windows".
+// - On Windows (best-effort): "windows<version>" like "windows10.0.22631".
+// - On Darwin/macOS (best-effort): "darwin<version>" like "darwin14.2.1".
+// - Fallback: returns GOOS like "linux"/"darwin"/"windows".
 func GetOS() string {
-	out, err := exec.Command("go", "env", "GOOS").Output()
-	if err != nil {
-		return strings.ToLower(strings.TrimSpace(runtime.GOOS))
-	}
-	goos := strings.ToLower(strings.TrimSpace(string(out)))
-	if goos != "linux" {
-		return goos
+	goos := strings.ToLower(strings.TrimSpace(getGoEnvVar("GOOS")))
+	if goos == "" {
+		goos = strings.ToLower(strings.TrimSpace(runtime.GOOS))
 	}
 
+	switch goos {
+	case "linux":
+		if desc := detectLinuxDescriptor(); desc != "" {
+			return desc
+		}
+		return "linux"
+	case "windows":
+		if v := detectWindowsVersion(); v != "" {
+			return "windows" + v
+		}
+		return "windows"
+	case "darwin":
+		if v := detectDarwinVersion(); v != "" {
+			return "darwin" + v
+		}
+		return "darwin"
+	default:
+		return goos
+	}
+}
+
+func getGoEnvVar(key string) string {
+	out, err := exec.Command("go", "env", key).Output()
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
+}
+
+func detectLinuxDescriptor() string {
 	f, err := os.Open("/etc/os-release")
 	if err != nil {
-		return goos
+		return ""
 	}
 	defer f.Close()
 
@@ -43,42 +73,135 @@ func GetOS() string {
 	id := strings.ToLower(strings.TrimSpace(m["ID"]))
 	ver := strings.TrimSpace(m["VERSION_ID"])
 	if id == "" || ver == "" {
-		return goos
+		return ""
 	}
 	return id + strings.TrimSpace(ver)
+}
+
+func detectWindowsVersion() string {
+	// Prefer PowerShell because parsing is easier and locale independent.
+	out, err := exec.Command(
+		"powershell",
+		"-NoProfile",
+		"-NonInteractive",
+		"-Command",
+		"[System.Environment]::OSVersion.Version.ToString()",
+	).Output()
+	if err == nil {
+		v := strings.TrimSpace(string(out))
+		if v != "" {
+			return v
+		}
+	}
+
+	// Fallback to `cmd /c ver` (may vary by locale; extract first version-like token).
+	out, err = exec.Command("cmd", "/c", "ver").Output()
+	if err != nil {
+		return ""
+	}
+	return extractFirstVersionLikeToken(string(out))
+}
+
+func detectDarwinVersion() string {
+	// Prefer macOS product version: e.g. 14.2.1
+	out, err := exec.Command("sw_vers", "-productVersion").Output()
+	if err == nil {
+		v := strings.TrimSpace(string(out))
+		if v != "" {
+			return v
+		}
+	}
+	// Fallback to kernel release: e.g. 23.2.0
+	out, err = exec.Command("uname", "-r").Output()
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
+}
+
+func extractFirstVersionLikeToken(s string) string {
+	s = strings.TrimSpace(s)
+	start := -1
+	for i, r := range s {
+		if unicode.IsDigit(r) {
+			start = i
+			break
+		}
+	}
+	if start < 0 {
+		return ""
+	}
+	end := start
+	for end < len(s) {
+		c := s[end]
+		if (c >= '0' && c <= '9') || c == '.' {
+			end++
+			continue
+		}
+		break
+	}
+	if end <= start {
+		return ""
+	}
+	return s[start:end]
 }
 
 // GetArch returns current arch with best-effort variant.
 // Examples: amd64, armv7, arm64v8.
 func GetArch() string {
-	out, err := exec.Command("go", "env", "GOARCH").Output()
-	if err != nil {
-		goarch := strings.ToLower(strings.TrimSpace(runtime.GOARCH))
-		if goarch == "arm64" {
-			return "arm64v8"
-		}
-		return goarch
-	}
-	goarch := strings.ToLower(strings.TrimSpace(string(out)))
-	if goarch == "" {
-		return ""
-	}
-	if goarch == "arm" {
-		outArm, errArm := exec.Command("go", "env", "GOARM").Output()
-		if errArm != nil {
+	// Prefer `go env -json` so we only spawn `go` once and can assemble
+	// arch variants consistently (e.g. amd64v1, armv7, arm64v8).
+	env, ok := getGoEnvArchVars()
+	if ok {
+		goarch := strings.ToLower(strings.TrimSpace(env.GOARCH))
+		switch goarch {
+		case "":
+			// fall through to runtime below
+		case "amd64":
+			goamd64 := strings.ToLower(strings.TrimSpace(env.GOAMD64))
+			// GOAMD64 is typically "v1"/"v2"/"v3"/"v4".
+			if strings.HasPrefix(goamd64, "v") {
+				return "amd64" + goamd64
+			}
+			return "amd64"
+		case "arm":
+			goarm := strings.TrimSpace(env.GOARM)
+			if goarm != "" {
+				return "armv" + goarm
+			}
 			return "arm"
+		case "arm64":
+			// Go does not expose an arm64 variant; treat as v8 by default.
+			return "arm64v8"
+		default:
+			return goarch
 		}
-		goarm := strings.TrimSpace(string(outArm))
-		if goarm != "" {
-			return "armv" + goarm
-		}
-		return "arm"
 	}
+
+	// Fallback when `go` is unavailable.
+	goarch := strings.ToLower(strings.TrimSpace(runtime.GOARCH))
 	if goarch == "arm64" {
-		// Go does not expose an arm64 variant; treat as v8 by default.
 		return "arm64v8"
 	}
 	return goarch
+}
+
+type goEnvArchVars struct {
+	GOARCH  string `json:"GOARCH"`
+	GOAMD64 string `json:"GOAMD64"`
+	GOARM   string `json:"GOARM"`
+}
+
+func getGoEnvArchVars() (goEnvArchVars, bool) {
+	out, err := exec.Command("go", "env", "-json").Output()
+	if err != nil {
+		return goEnvArchVars{}, false
+	}
+	var v goEnvArchVars
+	if err := json.Unmarshal(out, &v); err != nil {
+		return goEnvArchVars{}, false
+	}
+	return v, true
 }
 
 // GetComplier returns `go env GOVERSION`, e.g. go1.20.5.
