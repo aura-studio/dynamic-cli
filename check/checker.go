@@ -24,72 +24,78 @@ func NewChecker(proc config.Procedure) *Checker {
 	}
 }
 
-func (c *Checker) Run() {
-	c.checkOS()
-	c.checkArch()
-	c.checkCompiler()
+func (c *Checker) Run() bool {
+	okOS := c.checkOS()
+	okArch := c.checkArch()
+	okCompiler := c.checkCompiler()
+	if okOS && okArch && okCompiler {
+		return true
+	}
+	return false
 }
 
-func (c *Checker) checkOS() {
+func (c *Checker) checkOS() bool {
 	// 检查操作系统的版本，如ubuntu22.04、alpine3.18等，不符合则警告
 	// 约定：
 	// - 若 TargetOS 为 go env GOOS 风格（linux/darwin/windows），则直接对比 GOOS
 	// - 若 TargetOS 为发行版+版本（ubuntu22.04 / alpine3.18），则仅在 linux 下从 /etc/os-release 获取 ID+VERSION_ID
 	// - 无法探测时仅告警，不中断
 	if c.TargetOS == "" {
-		return
+		return true
 	}
 
-	actualGOOS := goEnv("GOOS")
+	actualGOOS := strings.ToLower(goEnv("GOOS"))
 	if actualGOOS == "" {
 		warnf("toolchain cannot detect GOOS (target=%s)", c.TargetOS)
-		return
+		return false
 	}
 
 	// Generic GOOS match
 	if isGenericGOOS(c.TargetOS) {
-		if actualGOOS != c.TargetOS {
-			warnf("toolchain OS mismatch (target=%s actual=%s)", c.TargetOS, actualGOOS)
-			return
+		expected := strings.ToLower(strings.TrimSpace(c.TargetOS))
+		if actualGOOS != expected {
+			warnf("toolchain OS mismatch (target=%s actual=%s)", expected, actualGOOS)
+			return false
 		}
-		okf("toolchain OS match (target=%s actual=%s)", c.TargetOS, actualGOOS)
-		return
+		okf("toolchain OS match (target=%s actual=%s)", expected, actualGOOS)
+		return true
 	}
 
 	// Distro match only on linux
 	if actualGOOS != "linux" {
 		warnf("toolchain OS mismatch (target=%s actual=%s)", c.TargetOS, actualGOOS)
-		return
+		return false
 	}
 
 	id, ver := readOSRelease()
 	if id == "" || ver == "" {
 		warnf("toolchain cannot detect distro version from /etc/os-release (target=%s)", c.TargetOS)
-		return
+		return false
 	}
 	actual := strings.ToLower(id) + strings.TrimSpace(ver)
 	expected := strings.ToLower(strings.TrimSpace(c.TargetOS))
 	if actual != expected {
 		warnf("toolchain OS mismatch (target=%s actual=%s)", expected, actual)
-		return
+		return false
 	}
 	okf("toolchain OS match (target=%s actual=%s)", expected, actual)
+	return true
 }
 
-func (c *Checker) checkArch() {
+func (c *Checker) checkArch() bool {
 	// 检查Go的架构附带子版本，如arm64v8与arm64v7等，不符合则警告
 	// 约定：
 	// - TargetArch 支持：amd64/arm64/armv7/armv6/arm64v8 等
 	// - 实际值优先来自 go env GOARCH/GOARM；必要时用 uname -m 辅助推断 arm64v8
 	// - 允许“只写基础架构”的目标（如 arm64）匹配带后缀的实际（如 arm64v8）
 	if c.TargetArch == "" {
-		return
+		return true
 	}
 
 	actual := detectArchWithVariant()
 	if actual == "" {
 		warnf("toolchain cannot detect arch (target=%s)", c.TargetArch)
-		return
+		return false
 	}
 
 	expected := strings.ToLower(strings.TrimSpace(c.TargetArch))
@@ -97,39 +103,41 @@ func (c *Checker) checkArch() {
 
 	if expected == actualLower {
 		okf("toolchain ARCH match (target=%s actual=%s)", expected, actualLower)
-		return
+		return true
 	}
 	// Allow base match
 	if baseArch(actualLower) == expected {
 		okf("toolchain ARCH match (target=%s actual=%s)", expected, actualLower)
-		return
+		return true
 	}
 	warnf("toolchain ARCH mismatch (target=%s actual=%s)", expected, actualLower)
+	return false
 }
 
-func (c *Checker) checkCompiler() {
+func (c *Checker) checkCompiler() bool {
 	// 检查Go的编译器版本，如go1.20.5等，不符合则警告
 	// 约定：
 	// - TargetCompiler 形如 go1.20.5 或 go1.20
 	// - 若 TargetCompiler 是实际版本的前缀（go1.20 匹配 go1.20.5），则视为符合
 	if c.TargetCompiler == "" {
-		return
+		return true
 	}
-	actual := goEnv("GOVERSION")
+	actual := strings.TrimSpace(goEnv("GOVERSION"))
 	if actual == "" {
 		warnf("toolchain cannot detect GOVERSION (target=%s)", c.TargetCompiler)
-		return
+		return false
 	}
 	expected := strings.TrimSpace(c.TargetCompiler)
 	if actual == expected {
 		okf("toolchain COMPILER match (target=%s actual=%s)", expected, actual)
-		return
+		return true
 	}
 	if strings.HasPrefix(actual, expected) {
 		okf("toolchain COMPILER match (target=%s actual=%s)", expected, actual)
-		return
+		return true
 	}
 	warnf("toolchain COMPILER mismatch (target=%s actual=%s)", expected, actual)
+	return false
 }
 
 func warnf(format string, args ...any) {
@@ -164,7 +172,7 @@ func readOSRelease() (id, versionID string) {
 	}
 	defer f.Close()
 
-	var m = map[string]string{}
+	m := map[string]string{}
 	sc := bufio.NewScanner(f)
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
@@ -206,7 +214,6 @@ func detectArchWithVariant() string {
 	}
 	return goarch
 }
-
 func baseArch(arch string) string {
 	arch = strings.ToLower(strings.TrimSpace(arch))
 	// Examples: arm64v8 -> arm64, armv7 -> arm
