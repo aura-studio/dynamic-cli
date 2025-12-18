@@ -6,7 +6,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/aura-studio/dynamic-cli/config"
 	"github.com/aura-studio/dynamic-cli/push"
@@ -19,15 +18,7 @@ var pushCmd = &cobra.Command{
 	Short: "Push using dynamic.yaml and specified procedure",
 	Long:  `Reads dynamic.yaml and the given --procedure, then prepares push tasks (printing summary for now).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// resolve dynamic.yaml path: --config > current directory
-		cfgPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			fmt.Println("error:", err)
-			os.Exit(1)
-		}
-		if cfgPath == "" {
-			cfgPath = filepath.Join(".", "dynamic.yaml")
-		}
+		cfgPath := resolveConfigPath(cmd)
 
 		// required procedure name
 		proc, err := cmd.Flags().GetString("procedure")
@@ -53,6 +44,6 @@ var pushCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(pushCmd)
-	pushCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
+	pushCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml if exists)")
 	pushCmd.Flags().StringP("procedure", "p", "", "procedure name to push (required)")
 }

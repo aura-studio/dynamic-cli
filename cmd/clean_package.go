@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/aura-studio/dynamic-cli/clean"
 	"github.com/aura-studio/dynamic-cli/config"
@@ -17,14 +16,7 @@ var cleanPackageCmd = &cobra.Command{
 	Example: "  dynamic clean package -c ./dynamic.yaml -p brazil\n",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		cfgPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			fmt.Println("error:", err)
-			os.Exit(1)
-		}
-		if cfgPath == "" {
-			cfgPath = filepath.Join(".", "dynamic.yaml")
-		}
+		cfgPath := resolveConfigPath(cmd)
 
 		procName, err := cmd.Flags().GetString("procedure")
 		if err != nil {
@@ -45,6 +37,6 @@ var cleanPackageCmd = &cobra.Command{
 
 func init() {
 	cleanCmd.AddCommand(cleanPackageCmd)
-	cleanPackageCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
+	cleanPackageCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml if exists)")
 	cleanPackageCmd.Flags().StringP("procedure", "p", "", "procedure name to clean (required)")
 }

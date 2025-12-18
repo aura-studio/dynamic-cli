@@ -6,7 +6,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/aura-studio/dynamic-cli/build"
 	"github.com/aura-studio/dynamic-cli/config"
@@ -19,15 +18,7 @@ var buildCmd = &cobra.Command{
 	Short: "Build using dynamic.yaml and specified procedure",
 	Long:  `Reads dynamic.yaml and the given --procedure, then constructs a Build object.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// resolve dynamic.yaml path: --config > current directory
-		cfgPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			fmt.Println("error:", err)
-			os.Exit(1)
-		}
-		if cfgPath == "" {
-			cfgPath = filepath.Join(".", "dynamic.yaml")
-		}
+		cfgPath := resolveConfigPath(cmd)
 
 		// required procedure name
 		proc, err := cmd.Flags().GetString("procedure")
@@ -52,6 +43,6 @@ var buildCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(buildCmd)
-	buildCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
+	buildCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml if exists)")
 	buildCmd.Flags().StringP("procedure", "p", "", "procedure name to build (required)")
 }
