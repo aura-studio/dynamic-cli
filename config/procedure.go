@@ -58,14 +58,17 @@ func CreateProcedure(c Config, procedureName string) Procedure {
 
 	// compose Build
 	var b Procedure
+	
 	b.Toolchain.OS = e.Toolchain.OS
 	b.Toolchain.Arch = e.Toolchain.Arch
 	b.Toolchain.Compiler = e.Toolchain.Compiler
 	b.Toolchain.Variant = e.Toolchain.Variant
-
 	if b.Toolchain.Variant == "generic" {
 		b.Warehouse.Local = "/opt/warehouse"
+	} else {
+		b.Warehouse.Local = e.Warehouse.Local
 	}
+
 	b.Warehouse.Remote = append(b.Warehouse.Remote, e.Warehouse.Remote...)
 
 	b.Source.Module = p.Source.Module
