@@ -1,50 +1,24 @@
-package check
+package env
 
 import (
 	"fmt"
 	"os"
 	"strings"
-
-	"github.com/aura-studio/dynamic-cli/config"
 )
 
-type Checker struct {
-	TargetOS       string
-	TargetArch     string
-	TargetCompiler string
-}
-
-func NewChecker(proc config.Procedure) *Checker {
-	return &Checker{
-		TargetOS:       proc.Toolchain.OS,
-		TargetArch:     proc.Toolchain.Arch,
-		TargetCompiler: proc.Toolchain.Compiler,
-	}
-}
-
-func (c *Checker) Run() bool {
-	okOS := c.checkOS()
-	okArch := c.checkArch()
-	okCompiler := c.checkCompiler()
-	if okOS && okArch && okCompiler {
-		return true
-	}
-	return false
-}
-
-func (c *Checker) checkOS() bool {
-	// 直接比对 env.GetOS() 的返回值（严格相等）。
-	if c.TargetOS == "" {
+func CheckOS(targetOS string) bool {
+	// 直接比对 GetOS() 的返回值（严格相等）。
+	if targetOS == "" {
 		return true
 	}
 
 	actualOS := strings.ToLower(strings.TrimSpace(GetOS()))
 	if actualOS == "" {
-		warnf("cannot detect GOOS (target=%s)", c.TargetOS)
+		warnf("cannot detect GOOS (target=%s)", targetOS)
 		return false
 	}
 
-	expected := strings.ToLower(strings.TrimSpace(c.TargetOS))
+	expected := strings.ToLower(strings.TrimSpace(targetOS))
 	if actualOS != expected {
 		warnf("OS mismatch (target=%s actual=%s)", expected, actualOS)
 		return false
@@ -53,19 +27,19 @@ func (c *Checker) checkOS() bool {
 	return true
 }
 
-func (c *Checker) checkArch() bool {
-	// 直接比对 env.GetArch() 的返回值（严格相等）。
-	if c.TargetArch == "" {
+func CheckArch(targetArch string) bool {
+	// 直接比对 GetArch() 的返回值（严格相等）。
+	if targetArch == "" {
 		return true
 	}
 
 	actual := GetArch()
 	if actual == "" {
-		warnf("cannot detect arch (target=%s)", c.TargetArch)
+		warnf("cannot detect arch (target=%s)", targetArch)
 		return false
 	}
 
-	expected := strings.ToLower(strings.TrimSpace(c.TargetArch))
+	expected := strings.ToLower(strings.TrimSpace(targetArch))
 	actualLower := strings.ToLower(actual)
 
 	if expected == actualLower {
@@ -76,17 +50,17 @@ func (c *Checker) checkArch() bool {
 	return false
 }
 
-func (c *Checker) checkCompiler() bool {
+func CheckCompiler(targetCompiler string) bool {
 	// 检查Go的编译器版本，如go1.20.5等，不符合则警告（严格相等）。
-	if c.TargetCompiler == "" {
+	if targetCompiler == "" {
 		return true
 	}
 	actual := GetCompiler()
 	if actual == "" {
-		warnf("cannot detect GOVERSION (target=%s)", c.TargetCompiler)
+		warnf("cannot detect GOVERSION (target=%s)", targetCompiler)
 		return false
 	}
-	expected := strings.TrimSpace(c.TargetCompiler)
+	expected := strings.TrimSpace(targetCompiler)
 	if actual == expected {
 		okf("COMPILER match (target=%s actual=%s)", expected, actual)
 		return true

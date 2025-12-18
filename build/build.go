@@ -3,15 +3,23 @@ package build
 import (
 	"fmt"
 
-	"github.com/aura-studio/dynamic-cli/check"
 	"github.com/aura-studio/dynamic-cli/config"
+	"github.com/aura-studio/dynamic-cli/env"
 )
 
 // BuildForProcedure executes build operations for a given procedure.
 // Stub implementation; integration will follow.
 func BuildForProcedure(proc config.Procedure) {
-	if !check.NewChecker(proc).Run() {
-		fmt.Println("Skipping build due to toolchain mismatch.")
+	if !env.CheckOS(proc.Toolchain.OS) {
+		fmt.Println("Build aborted due to OS mismatch.")
+		return
+	}
+	if !env.CheckArch(proc.Toolchain.Arch) {
+		fmt.Println("Build aborted due to Arch mismatch.")
+		return
+	}
+	if !env.CheckCompiler(proc.Toolchain.Compiler) {
+		fmt.Println("Build aborted due to Compiler mismatch.")
 		return
 	}
 

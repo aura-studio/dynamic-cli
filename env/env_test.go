@@ -1,14 +1,16 @@
-package check
+package env_test
 
 import (
 	"os/exec"
 	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/aura-studio/dynamic-cli/env"
 )
 
 func TestGetOS(t *testing.T) {
-	got := strings.ToLower(strings.TrimSpace(GetOS()))
+	got := strings.ToLower(strings.TrimSpace(env.GetOS()))
 	t.Logf("Detected OS: %q", got)
 	if got == "" {
 		t.Fatalf("GetOS() returned empty")
@@ -33,7 +35,7 @@ func TestGetOS(t *testing.T) {
 }
 
 func TestGetArch(t *testing.T) {
-	got := strings.ToLower(strings.TrimSpace(GetArch()))
+	got := strings.ToLower(strings.TrimSpace(env.GetArch()))
 	t.Logf("Detected Arch: %q", got)
 	if got == "" {
 		t.Fatalf("GetArch() returned empty")
@@ -77,7 +79,7 @@ func TestGetArch(t *testing.T) {
 }
 
 func TestGetComplier(t *testing.T) {
-	got := strings.TrimSpace(GetCompiler())
+	got := strings.TrimSpace(env.GetCompiler())
 	t.Logf("Detected Compiler Version: %q", got)
 	if got == "" {
 		t.Fatalf("GetComplier() returned empty")
