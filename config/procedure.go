@@ -74,5 +74,14 @@ func CreateProcedure(c Config, procedureName string) Procedure {
 	b.Target.Package = p.Target.Package
 	b.Target.Version = p.Target.Version
 
+	switch b.Toolchain.Variant {
+	case "generic":
+		if e.Warehouse.Local != "/opt/warehouse" {
+			panic("build: unsupported warehouse.local '" + e.Warehouse.Local + "' for toolchain.variant 'generic' in procedure '" + procedureName + "'")
+		}
+	default:
+		panic("build: unsupported toolchain.variant '" + b.Toolchain.Variant + "' in procedure '" + procedureName + "'")
+	}
+
 	return b
 }
