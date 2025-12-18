@@ -3,90 +3,15 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 */
 package cmd
 
-import (
-	"fmt"
-	"os"
-	"path/filepath"
-
-	"github.com/aura-studio/dynamic-cli/clean"
-	"github.com/aura-studio/dynamic-cli/config"
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
 // cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
-	Short: "Clean using dynamic.yaml and specified procedure",
-	Long:  `Reads dynamic.yaml and the given --procedure, then resolves paths to clean (printing summary for now).`,
-	Run: func(cmd *cobra.Command, args []string) {
-		// resolve dynamic.yaml path: --config > current directory
-		cfgPath, err := cmd.Flags().GetString("config")
-		if err != nil {
-			fmt.Println("error:", err)
-			os.Exit(1)
-		}
-		if cfgPath == "" {
-			cfgPath = filepath.Join(".", "dynamic.yaml")
-		}
-
-		// clean type
-		t, err := cmd.Flags().GetString("type")
-		if err != nil {
-			fmt.Println("error:", err)
-			os.Exit(1)
-		}
-		if t == "" {
-			fmt.Println("error: clean type is required: cache|package|all")
-			os.Exit(1)
-		}
-		var ct clean.CleanType
-		switch t {
-		case "cache":
-			ct = clean.CleanTypeCache
-		case "package":
-			ct = clean.CleanTypePackage
-		case "all":
-			ct = clean.CleanTypeAll
-		default:
-			fmt.Println("error: invalid clean type:", t)
-			os.Exit(1)
-		}
-
-		// procedure required when type=package
-		proc, err := cmd.Flags().GetString("procedure")
-		if err != nil {
-			fmt.Println("error:", err)
-			os.Exit(1)
-		}
-		if ct == clean.CleanTypePackage && proc == "" {
-			fmt.Println("error: procedure is required when type=package")
-			os.Exit(1)
-		}
-
-		// parse and validate
-		c := config.Parse(cfgPath)
-		config.Validate(c)
-
-		// compose procedure when needed and call clean entry
-		var procObj config.Procedure
-		if ct == clean.CleanTypePackage || ct == clean.CleanTypeCache {
-			procObj = config.CreateProcedure(c, proc)
-		} else {
-			// for all, a dummy procedure with warehouse local is sufficient
-			// but CreateProcedure enforces name; use provided or pick first
-			if proc == "" && len(c.Procedures) > 0 {
-				procObj = config.CreateProcedure(c, c.Procedures[0].Name)
-			} else if proc != "" {
-				procObj = config.CreateProcedure(c, proc)
-			}
-		}
-		clean.CleanForProcedure(procObj, ct)
-	},
+	Short: "清理构建产物",
+	Long:  "清理 warehouse 下的构建产物，支持 cache/package/all 三种子命令。",
 }
 
 func init() {
 	rootCmd.AddCommand(cleanCmd)
-	cleanCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml)")
-	cleanCmd.Flags().StringP("procedure", "p", "", "procedure name (required when type=package)")
-	cleanCmd.Flags().StringP("type", "t", "", "clean type: cache|package|all (required)")
 }
