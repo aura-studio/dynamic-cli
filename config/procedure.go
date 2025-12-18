@@ -58,7 +58,7 @@ func CreateProcedure(c Config, procedureName string) Procedure {
 
 	// compose Build
 	var b Procedure
-	
+
 	b.Toolchain.OS = e.Toolchain.OS
 	b.Toolchain.Arch = e.Toolchain.Arch
 	b.Toolchain.Compiler = e.Toolchain.Compiler
