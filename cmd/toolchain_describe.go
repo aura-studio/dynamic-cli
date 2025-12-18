@@ -10,11 +10,11 @@ import (
 )
 
 var toolchainDescribeCmd = &cobra.Command{
-	Use:   "describe [os|arch|compiler]",
-	Short: "打印当前 toolchain 值",
-	Long:  "从本机环境探测并输出指定字段的值。输出仅包含值本身。",
+	Use:     "describe [os|arch|compiler]",
+	Short:   "打印当前 toolchain 值",
+	Long:    "从本机环境探测并输出指定字段的值。输出仅包含值本身。",
 	Example: "  dynamic toolchain describe os\n  dynamic toolchain describe arch\n  dynamic toolchain describe compiler\n",
-	Args:  cobra.ExactArgs(1),
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		kind := strings.ToLower(strings.TrimSpace(args[0]))
 		switch kind {
