@@ -11,8 +11,8 @@ import (
 
 var toolchainCheckCmd = &cobra.Command{
 	Use:     "check",
-	Short:   "一次性校验 OS / Arch / Compiler",
-	Long:    "读取 dynamic.yaml 中指定 procedure 的 environment.toolchain 配置，并一次性校验 OS/Arch/Compiler 三个字段。任一字段不匹配则退出码为 1。",
+	Short:   "Check OS / Arch / Compiler in one run",
+	Long:    "Reads environment.toolchain from dynamic.yaml for the given procedure and checks OS/Arch/Compiler. Exits with code 1 on any mismatch.",
 	Example: "  dynamic toolchain check -c ./dynamic.yaml -p brazil\n",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {

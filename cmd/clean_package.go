@@ -11,8 +11,8 @@ import (
 
 var cleanPackageCmd = &cobra.Command{
 	Use:     "package",
-	Short:   "清理指定 package 产物目录",
-	Long:    "读取 dynamic.yaml 并定位到指定 procedure 的产物目录，删除该目录。",
+	Short:   "Remove one package output directory",
+	Long:    "Reads dynamic.yaml, locates the output directory for the given procedure, and removes that directory.",
 	Example: "  dynamic clean package -c ./dynamic.yaml -p brazil\n",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -15,7 +15,7 @@ var (
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "显示版本信息",
+	Short: "Print version information",
 	Run: func(cmd *cobra.Command, args []string) {
 		// If Version not injected via ldflags, try module build info (works with `go install module@version`).
 		if Version == "dev" {

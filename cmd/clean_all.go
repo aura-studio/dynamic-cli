@@ -11,8 +11,8 @@ import (
 
 var cleanAllCmd = &cobra.Command{
 	Use:     "all",
-	Short:   "清理整个 warehouse",
-	Long:    "读取 dynamic.yaml 并删除 warehouse.local 下的所有内容。可以通过 -p 指定 procedure 来选择 warehouse；不指定则使用配置中的第一个 procedure。",
+	Short:   "Remove the entire warehouse",
+	Long:    "Reads dynamic.yaml and deletes all contents under warehouse.local. You may pass -p to choose which procedure's warehouse to use; if omitted, the first procedure in config is used.",
 	Example: "  dynamic clean all -c ./dynamic.yaml\n  dynamic clean all -c ./dynamic.yaml -p brazil\n",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {

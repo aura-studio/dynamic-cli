@@ -11,8 +11,8 @@ import (
 
 var toolchainDescribeCmd = &cobra.Command{
 	Use:     "describe [os|arch|compiler|all]",
-	Short:   "打印当前 toolchain 值",
-	Long:    "从本机环境探测并输出指定字段的值。对单个字段输出仅包含值本身；使用 all 时会输出三行带标签的 OS/Arch/Compiler。",
+	Short:   "Print current toolchain values",
+	Long:    "Detects and prints toolchain values from the local machine. For a single field it prints only the value; for 'all' it prints three labeled lines (OS/Arch/Compiler).",
 	Example: "  dynamic toolchain describe os\n  dynamic toolchain describe arch\n  dynamic toolchain describe compiler\n  dynamic toolchain describe all\n",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

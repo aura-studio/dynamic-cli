@@ -11,8 +11,8 @@ import (
 
 var cleanCacheCmd = &cobra.Command{
 	Use:     "cache",
-	Short:   "清理缓存（保留主产物）",
-	Long:    "读取 dynamic.yaml 并定位到指定 procedure 的产物目录，清理目录内除主产物文件外的缓存内容。",
+	Short:   "Clean cache (keep main artifacts)",
+	Long:    "Reads dynamic.yaml, locates the output directory for the given procedure, and removes cached files while keeping main artifacts.",
 	Example: "  dynamic clean cache -c ./dynamic.yaml -p brazil\n",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
