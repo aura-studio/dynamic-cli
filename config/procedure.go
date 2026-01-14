@@ -1,5 +1,14 @@
 package config
 
+// GetAllProcedures returns all procedure names from the config
+func GetAllProcedures(c Config) []string {
+	var names []string
+	for _, p := range c.Procedures {
+		names = append(names, p.Name)
+	}
+	return names
+}
+
 type Procedure struct {
 	Toolchain struct {
 		OS       string `yaml:"os"`
@@ -31,7 +40,7 @@ func CreateProcedure(c Config, procedureName string) Procedure {
 		panic("build: procedure name must not be empty")
 	}
 	// find procedure
-	var pIdx = -1
+	pIdx := -1
 	for i, p := range c.Procedures {
 		if p.Name == procedureName {
 			pIdx = i
@@ -44,7 +53,7 @@ func CreateProcedure(c Config, procedureName string) Procedure {
 	p := c.Procedures[pIdx]
 
 	// find environment by name
-	var eIdx = -1
+	eIdx := -1
 	for i, e := range c.Environments {
 		if e.Name == p.Environment {
 			eIdx = i
