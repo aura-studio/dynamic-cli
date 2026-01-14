@@ -23,20 +23,31 @@ var cleanPackageCmd = &cobra.Command{
 			fmt.Println("error:", err)
 			os.Exit(1)
 		}
-		if procName == "" {
-			fmt.Println("error: procedure is required")
-			os.Exit(1)
-		}
 
 		c := config.Parse(cfgPath)
 		config.Validate(c)
-		proc := config.CreateProcedure(c, procName)
-		clean.CleanForProcedure(proc, clean.CleanTypePackage)
+
+		if procName == "" {
+			// clean package for all procedures
+			fmt.Println("No procedure specified, cleaning package for all procedures...")
+			procedures := config.GetAllProcedures(c)
+			for _, pName := range procedures {
+				fmt.Printf("\nCleaning package for procedure: %s\n", pName)
+				proc := config.CreateProcedure(c, pName)
+				clean.CleanForProcedure(proc, clean.CleanTypePackage)
+			}
+			fmt.Println("\nPackage cleaned for all procedures.")
+		} else {
+			// clean package for specified procedure
+			proc := config.CreateProcedure(c, procName)
+			clean.CleanForProcedure(proc, clean.CleanTypePackage)
+		}
 	},
 }
 
 func init() {
 	cleanCmd.AddCommand(cleanPackageCmd)
-	cleanPackageCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml if exists)")
-	cleanPackageCmd.Flags().StringP("procedure", "p", "", "procedure name to clean (required)")
+	cleanPackageCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (required)")
+	cleanPackageCmd.MarkFlagRequired("config")
+	cleanPackageCmd.Flags().StringP("procedure", "p", "", "procedure name to clean (optional, cleans all if not specified)")
 }

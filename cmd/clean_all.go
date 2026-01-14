@@ -38,6 +38,7 @@ var cleanAllCmd = &cobra.Command{
 
 func init() {
 	cleanCmd.AddCommand(cleanAllCmd)
-	cleanAllCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml if exists)")
+	cleanAllCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (required)")
+	cleanAllCmd.MarkFlagRequired("config")
 	cleanAllCmd.Flags().StringP("procedure", "p", "", "procedure name to select warehouse (optional)")
 }

@@ -20,14 +20,10 @@ var pushCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		cfgPath := resolveConfigPath(cmd)
 
-		// required procedure name
+		// procedure name is optional
 		proc, err := cmd.Flags().GetString("procedure")
 		if err != nil {
 			fmt.Println("error:", err)
-			os.Exit(1)
-		}
-		if proc == "" {
-			fmt.Println("error: procedure is required")
 			os.Exit(1)
 		}
 
@@ -35,15 +31,27 @@ var pushCmd = &cobra.Command{
 		c := config.Parse(cfgPath)
 		config.Validate(c)
 
-		// build object based on procedure
-		// compose procedure and call push entry
-		procObj := config.CreateProcedure(c, proc)
-		push.PushForProcedure(procObj)
+		if proc == "" {
+			// push all procedures
+			fmt.Println("No procedure specified, pushing all procedures...")
+			procedures := config.GetAllProcedures(c)
+			for _, procName := range procedures {
+				fmt.Printf("\nPushing procedure: %s\n", procName)
+				procObj := config.CreateProcedure(c, procName)
+				push.PushForProcedure(procObj)
+			}
+			fmt.Println("\nAll procedures pushed successfully.")
+		} else {
+			// push specified procedure
+			procObj := config.CreateProcedure(c, proc)
+			push.PushForProcedure(procObj)
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(pushCmd)
-	pushCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml if exists)")
-	pushCmd.Flags().StringP("procedure", "p", "", "procedure name to push (required)")
+	pushCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (required)")
+	pushCmd.MarkFlagRequired("config")
+	pushCmd.Flags().StringP("procedure", "p", "", "procedure name to push (optional, pushes all if not specified)")
 }
