@@ -51,7 +51,6 @@ var buildCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(buildCmd)
-	buildCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (required)")
-	buildCmd.MarkFlagRequired("config")
+	buildCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml or ./dynamic.yml)")
 	buildCmd.Flags().StringP("procedure", "p", "", "procedure name to build (optional, builds all if not specified)")
 }
