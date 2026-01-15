@@ -62,7 +62,8 @@ func (b *Builder) Build() {
 	defer fmt.Println("done!")
 
 	// Use netrc content from env when provided
-	netrc := os.Getenv("DYNAMIC_CLI_NETRC")
+	// Support multiple environment variable names for compatibility
+	netrc := b.getNetrcFromEnv()
 	if strings.TrimSpace(netrc) != "" {
 		b.bakNetRC()
 		b.writeNetRC(netrc)
@@ -71,6 +72,25 @@ func (b *Builder) Build() {
 
 	b.generate()
 	b.runBuilder()
+}
+
+// getNetrcFromEnv tries to get netrc content from multiple environment variables
+// in order of priority: DYNAMIC_NETRC, GIT_NETRC, GitNetrc, DynamicNetrc
+func (b *Builder) getNetrcFromEnv() string {
+	envVars := []string{
+		"DYNAMIC_NETRC",
+		"DynamicNetrc",
+		"GIT_NETRC",
+		"GitNetrc",
+	}
+
+	for _, envVar := range envVars {
+		if value := os.Getenv(envVar); strings.TrimSpace(value) != "" {
+			return value
+		}
+	}
+
+	return ""
 }
 
 // bakNetRC backup netrc file if exsits
