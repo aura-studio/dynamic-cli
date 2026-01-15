@@ -97,6 +97,7 @@ func (r *S3Remote) listMatchingKeys(ctx context.Context, client *s3.Client, list
 	// Match the same filenames push uploads.
 	libcgoName := fmt.Sprintf("libcgo_%s.so", name)
 	libgoName := fmt.Sprintf("libgo_%s.so", name)
+	metaName := fmt.Sprintf("meta_%s.json", name)
 
 	p := s3.NewListObjectsV2Paginator(client, &s3.ListObjectsV2Input{
 		Bucket: &r.bucket,
@@ -115,8 +116,10 @@ func (r *S3Remote) listMatchingKeys(ctx context.Context, client *s3.Client, list
 			}
 			key := *obj.Key
 			base := path.Base(key)
-			// Only pull the "current" artifacts; do not pull timestamped backups.
-			if base == libcgoName || base == libgoName {
+			// Pull primary and timestamped backup artifacts, including meta files.
+			if base == libcgoName || strings.HasPrefix(base, libcgoName+".") ||
+				base == libgoName || strings.HasPrefix(base, libgoName+".") ||
+				base == metaName || strings.HasPrefix(base, metaName+".") {
 				keys = append(keys, key)
 			}
 		}

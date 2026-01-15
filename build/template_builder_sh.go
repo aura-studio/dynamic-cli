@@ -14,7 +14,7 @@ export GOPRIVATE={{.Module}}
 go clean --modcache
 go mod tidy
 
-# Resolve source module commit id (best-effort) for artifact suffix naming.
+# Resolve source module commit id (best-effort) for meta file.
 # Prefer Go's module download metadata (Origin.Hash). Fallback to parsing pseudo-version.
 commit_id=""
 download_json=$(go mod download -json "{{.Module}}@{{.Version}}" 2>/dev/null || true)
@@ -28,11 +28,6 @@ fi
 if [ -z "$commit_id" ]; then
 	commit_id="unknown"
 fi
-# Trim to keep filenames short.
-commit_id_short="$commit_id"
-if [ "$commit_id" != "unknown" ]; then
-	commit_id_short="${commit_id:0:12}"
-fi
 {{if eq .Variant "generic"}}
 go build -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="" {{.Dir}}/libcgo_{{.Name}}
 go build -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-r {{.Dir}}/" {{.Dir}}/libgo_{{.Name}}
@@ -41,11 +36,25 @@ go build -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldfla
 go build -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="" {{.Dir}}/libcgo_{{.Name}}
 go build -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-r {{.Dir}}/" {{.Dir}}/libgo_{{.Name}}
 {{end}}
-# Friendly timestamp with timezone, ISO-like, force +08:00
-# Use Asia/Shanghai timezone and insert colon into %z for +08:00
-ts=$(TZ='Asia/Shanghai' date "+%Y-%m-%dT%H:%M:%S%z")
-# Convert +0800 -> +08:00 for readability (portable bash string ops)
-ts="${ts%??}:${ts: -2}"
-cp -rf {{.Dir}}/libgo_{{.Name}}.so {{.Dir}}/libgo_{{.Name}}.so.$commit_id_short.$ts
-cp -rf {{.Dir}}/libcgo_{{.Name}}.so {{.Dir}}/libcgo_{{.Name}}.so.$commit_id_short.$ts
+
+# Timestamp suffix for backup artifacts and meta file.
+# Format example: 20240612T153000Z
+ts=$(date -u "+%Y%m%dT%H%M%SZ")
+
+# Backup .so files with timestamp suffix.
+cp -rf {{.Dir}}/libgo_{{.Name}}.so {{.Dir}}/libgo_{{.Name}}.so.$ts
+cp -rf {{.Dir}}/libcgo_{{.Name}}.so {{.Dir}}/libcgo_{{.Name}}.so.$ts
+
+# Generate meta file for this libcgo/libgo pair.
+meta={{.Dir}}/meta_{{.Name}}.json
+cat > "$meta" <<EOF
+{
+  "repo": "{{.Module}}",
+  "commit_id": "$commit_id",
+  "build_time": "$ts"
+}
+EOF
+
+# Backup meta file with the same timestamp suffix.
+cp -rf "$meta" "$meta.$ts"
 `

@@ -36,6 +36,7 @@ func NewTaskList(proc config.Procedure) *TaskList {
 	// Expected filenames under dir
 	libcgoName := fmt.Sprintf("libcgo_%s.so", name)
 	libgoName := fmt.Sprintf("libgo_%s.so", name)
+	metaName := fmt.Sprintf("meta_%s.json", name)
 
 	for _, remote := range proc.Warehouse.Remote {
 		if err := filepath.WalkDir(proc.Warehouse.Local, func(path string, d fs.DirEntry, err error) error {
@@ -51,7 +52,9 @@ func NewTaskList(proc config.Procedure) *TaskList {
 			}
 			base := filepath.Base(path)
 			// match primary and timestamped backups
-			if base == libcgoName || strings.HasPrefix(base, libcgoName+".") || base == libgoName || strings.HasPrefix(base, libgoName+".") {
+			if base == libcgoName || strings.HasPrefix(base, libcgoName+".") ||
+				base == libgoName || strings.HasPrefix(base, libgoName+".") ||
+				base == metaName || strings.HasPrefix(base, metaName+".") {
 				rel, relErr := filepath.Rel(proc.Warehouse.Local, path)
 				if relErr != nil {
 					return relErr

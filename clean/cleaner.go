@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type CleanType int
@@ -96,7 +97,7 @@ func (c *Cleaner) cleanCache() {
 					return nil
 				}
 				for _, file := range c.Files {
-					if path == file {
+					if path == file || strings.HasPrefix(path, file+".") {
 						return nil
 					}
 				}

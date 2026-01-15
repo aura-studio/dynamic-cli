@@ -34,6 +34,7 @@ func NewPathListForProcedure(proc config.Procedure) *PathList {
 		Files: []string{
 			filepath.Join(dir, "libcgo_"+name+".so"),
 			filepath.Join(dir, "libgo_"+name+".so"),
+			filepath.Join(dir, "meta_"+name+".json"),
 		},
 	}
 	return pl
