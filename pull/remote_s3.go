@@ -115,7 +115,8 @@ func (r *S3Remote) listMatchingKeys(ctx context.Context, client *s3.Client, list
 			}
 			key := *obj.Key
 			base := path.Base(key)
-			if base == libcgoName || strings.HasPrefix(base, libcgoName+".") || base == libgoName || strings.HasPrefix(base, libgoName+".") {
+			// Only pull the "current" artifacts; do not pull timestamped backups.
+			if base == libcgoName || base == libgoName {
 				keys = append(keys, key)
 			}
 		}
