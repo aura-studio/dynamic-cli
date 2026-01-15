@@ -116,10 +116,8 @@ func (r *S3Remote) listMatchingKeys(ctx context.Context, client *s3.Client, list
 			}
 			key := *obj.Key
 			base := path.Base(key)
-			// Pull primary and timestamped backup artifacts, including meta files.
-			if base == libcgoName || strings.HasPrefix(base, libcgoName+".") ||
-				base == libgoName || strings.HasPrefix(base, libgoName+".") ||
-				base == metaName || strings.HasPrefix(base, metaName+".") {
+			// Pull only primary artifacts (no timestamp suffix backups).
+			if base == libcgoName || base == libgoName || base == metaName {
 				keys = append(keys, key)
 			}
 		}
