@@ -16,7 +16,7 @@ import (
 var pullCmd = &cobra.Command{
 	Use:   "pull",
 	Short: "Pull artifacts from warehouse remote to local",
-	Long:  "Reads dynamic.yaml and the given --procedure, then pulls warehouse artifacts from remote(s) to local warehouse.",
+	Long:  "Reads dynamic-cli.yaml and the given --procedure, then pulls warehouse artifacts from remote(s) to local warehouse.",
 	Run: func(cmd *cobra.Command, args []string) {
 		cfgPath := resolveConfigPath(cmd)
 
@@ -65,7 +65,7 @@ var pullCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(pullCmd)
-	pullCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml or ./dynamic.yml)")
+	pullCmd.Flags().StringP("config", "c", "", "path to dynamic-cli.yaml (default: ./dynamic-cli.yaml or ./dynamic-cli.yml)")
 	pullCmd.Flags().StringP("procedure", "p", "", "procedure name to pull (optional, pulls all if not specified)")
 	pullCmd.Flags().IntP("concurrency", "j", 8, "max concurrent downloads per remote")
 	pullCmd.Flags().BoolP("force", "f", false, "overwrite existing local files")

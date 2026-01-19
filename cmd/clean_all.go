@@ -12,8 +12,8 @@ import (
 var cleanAllCmd = &cobra.Command{
 	Use:     "all",
 	Short:   "Remove the entire warehouse",
-	Long:    "Reads dynamic.yaml and deletes all contents under warehouse.local. You may pass -p to choose which procedure's warehouse to use; if omitted, the first procedure in config is used.",
-	Example: "  dynamic clean all -c ./dynamic.yaml\n  dynamic clean all -c ./dynamic.yaml -p brazil\n",
+	Long:    "Reads dynamic-cli.yaml and deletes all contents under warehouse.local. You may pass -p to choose which procedure's warehouse to use; if omitted, the first procedure in config is used.",
+	Example: "  dynamic clean all -c ./dynamic-cli.yaml\n  dynamic clean all -c ./dynamic-cli.yaml -p brazil\n",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfgPath := resolveConfigPath(cmd)
@@ -38,6 +38,6 @@ var cleanAllCmd = &cobra.Command{
 
 func init() {
 	cleanCmd.AddCommand(cleanAllCmd)
-	cleanAllCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml or ./dynamic.yml)")
+	cleanAllCmd.Flags().StringP("config", "c", "", "path to dynamic-cli.yaml (default: ./dynamic-cli.yaml or ./dynamic-cli.yml)")
 	cleanAllCmd.Flags().StringP("procedure", "p", "", "procedure name to select warehouse (optional)")
 }

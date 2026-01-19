@@ -15,8 +15,8 @@ import (
 // buildCmd represents the build command
 var buildCmd = &cobra.Command{
 	Use:   "build",
-	Short: "Build using dynamic.yaml and specified procedure",
-	Long:  `Reads dynamic.yaml and the given --procedure, then constructs a Build object.`,
+	Short: "Build using dynamic-cli.yaml and specified procedure",
+	Long:  `Reads dynamic-cli.yaml and the given --procedure, then constructs a Build object.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfgPath := resolveConfigPath(cmd)
 
@@ -51,6 +51,6 @@ var buildCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(buildCmd)
-	buildCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml or ./dynamic.yml)")
+	buildCmd.Flags().StringP("config", "c", "", "path to dynamic-cli.yaml (default: ./dynamic-cli.yaml or ./dynamic-cli.yml)")
 	buildCmd.Flags().StringP("procedure", "p", "", "procedure name to build (optional, builds all if not specified)")
 }

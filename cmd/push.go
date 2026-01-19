@@ -15,8 +15,8 @@ import (
 // pushCmd represents the push command
 var pushCmd = &cobra.Command{
 	Use:   "push",
-	Short: "Push using dynamic.yaml and specified procedure",
-	Long:  `Reads dynamic.yaml and the given --procedure, then prepares push tasks (printing summary for now).`,
+	Short: "Push using dynamic-cli.yaml and specified procedure",
+	Long:  `Reads dynamic-cli.yaml and the given --procedure, then prepares push tasks (printing summary for now).`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfgPath := resolveConfigPath(cmd)
 
@@ -51,6 +51,6 @@ var pushCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(pushCmd)
-	pushCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml or ./dynamic.yml)")
+	pushCmd.Flags().StringP("config", "c", "", "path to dynamic-cli.yaml (default: ./dynamic-cli.yaml or ./dynamic-cli.yml)")
 	pushCmd.Flags().StringP("procedure", "p", "", "procedure name to push (optional, pushes all if not specified)")
 }

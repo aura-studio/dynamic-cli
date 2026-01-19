@@ -12,8 +12,8 @@ import (
 var cleanCacheCmd = &cobra.Command{
 	Use:     "cache",
 	Short:   "Clean cache (keep main artifacts)",
-	Long:    "Reads dynamic.yaml, locates the output directory for the given procedure, and removes cached files while keeping main artifacts.",
-	Example: "  dynamic clean cache -c ./dynamic.yaml -p brazil\n",
+	Long:    "Reads dynamic-cli.yaml, locates the output directory for the given procedure, and removes cached files while keeping main artifacts.",
+	Example: "  dynamic clean cache -c ./dynamic-cli.yaml -p brazil\n",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfgPath := resolveConfigPath(cmd)
@@ -47,6 +47,6 @@ var cleanCacheCmd = &cobra.Command{
 
 func init() {
 	cleanCmd.AddCommand(cleanCacheCmd)
-	cleanCacheCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml or ./dynamic.yml)")
+	cleanCacheCmd.Flags().StringP("config", "c", "", "path to dynamic-cli.yaml (default: ./dynamic-cli.yaml or ./dynamic-cli.yml)")
 	cleanCacheCmd.Flags().StringP("procedure", "p", "", "procedure name to clean (optional, cleans all if not specified)")
 }

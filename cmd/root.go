@@ -13,7 +13,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "dynamic",
 	Short: "dynamic build tool",
-	Long:  "dynamic is a CLI driven by dynamic.yaml for build/clean/push and toolchain utilities.",
+	Long:  "dynamic is a CLI driven by dynamic-cli.yaml for build/clean/push and toolchain utilities.",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },

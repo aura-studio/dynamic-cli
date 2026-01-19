@@ -12,8 +12,8 @@ import (
 var toolchainCheckCmd = &cobra.Command{
 	Use:     "check",
 	Short:   "Check OS / Arch / Compiler in one run",
-	Long:    "Reads environment.toolchain from dynamic.yaml for the given procedure and checks OS/Arch/Compiler. Exits with code 1 on any mismatch.",
-	Example: "  dynamic toolchain check -c ./dynamic.yaml -p brazil\n",
+	Long:    "Reads environment.toolchain from dynamic-cli.yaml for the given procedure and checks OS/Arch/Compiler. Exits with code 1 on any mismatch.",
+	Example: "  dynamic toolchain check -c ./dynamic-cli.yaml -p brazil\n",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfgPath := resolveConfigPath(cmd)
@@ -45,6 +45,6 @@ var toolchainCheckCmd = &cobra.Command{
 
 func init() {
 	toolchainCmd.AddCommand(toolchainCheckCmd)
-	toolchainCheckCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml if exists)")
+	toolchainCheckCmd.Flags().StringP("config", "c", "", "path to dynamic-cli.yaml (default: ./dynamic-cli.yaml if exists)")
 	toolchainCheckCmd.Flags().StringP("procedure", "p", "", "procedure name to check (required)")
 }

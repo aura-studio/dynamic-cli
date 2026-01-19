@@ -9,7 +9,7 @@ import "github.com/spf13/cobra"
 var cleanCmd = &cobra.Command{
 	Use:   "clean",
 	Short: "Clean build artifacts",
-	Long:  "Cleans build artifacts under the warehouse. Subcommands: cache/package/all. Use -c to specify config; if omitted, ./dynamic.yaml is used only when it exists in the current directory.",
+	Long:  "Cleans build artifacts under the warehouse. Subcommands: cache/package/all. Use -c to specify config; if omitted, ./dynamic-cli.yaml is used only when it exists in the current directory.",
 }
 
 func init() {

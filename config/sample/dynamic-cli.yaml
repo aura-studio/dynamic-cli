@@ -1,0 +1,22 @@
+environments:
+  - name: default
+    toolchain:
+      os: ubuntu22.04
+      arch: amd64v1
+      compiler: go1.22.1
+      variant: generic
+    warehouse:
+      local: /tmp/warehouse
+      remote:
+        - s3://mirroring-lambda
+procedures:
+  - name: brazil
+    environment: default
+    source:
+      module: codeup.aliyun.com/mirror/admin/admin-api
+      package: route
+      version: brazil
+    target:
+      namespace: admin
+      package: route
+      version: latest

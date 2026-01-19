@@ -12,8 +12,8 @@ import (
 var cleanPackageCmd = &cobra.Command{
 	Use:     "package",
 	Short:   "Remove one package output directory",
-	Long:    "Reads dynamic.yaml, locates the output directory for the given procedure, and removes that directory.",
-	Example: "  dynamic clean package -c ./dynamic.yaml -p brazil\n",
+	Long:    "Reads dynamic-cli.yaml, locates the output directory for the given procedure, and removes that directory.",
+	Example: "  dynamic clean package -c ./dynamic-cli.yaml -p brazil\n",
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfgPath := resolveConfigPath(cmd)
@@ -47,6 +47,6 @@ var cleanPackageCmd = &cobra.Command{
 
 func init() {
 	cleanCmd.AddCommand(cleanPackageCmd)
-	cleanPackageCmd.Flags().StringP("config", "c", "", "path to dynamic.yaml (default: ./dynamic.yaml or ./dynamic.yml)")
+	cleanPackageCmd.Flags().StringP("config", "c", "", "path to dynamic-cli.yaml (default: ./dynamic-cli.yaml or ./dynamic-cli.yml)")
 	cleanPackageCmd.Flags().StringP("procedure", "p", "", "procedure name to clean (optional, cleans all if not specified)")
 }
