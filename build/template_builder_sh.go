@@ -28,13 +28,23 @@ fi
 if [ -z "$commit_id" ]; then
 	commit_id="unknown"
 fi
+# Detect OS for relative path linking
+OS=$(uname -s)
+if [ "$OS" = "Darwin" ]; then
+	# macOS: Use @loader_path for relative linking
+	CGO_LDFLAGS="-extldflags=-Wl,-install_name,@loader_path/libcgo_{{.Name}}.so"
+else
+	# Linux: Use $ORIGIN for relative linking
+	CGO_LDFLAGS="-extldflags=-Wl,-rpath,'\$ORIGIN'"
+fi
+
 {{if eq .Variant "generic"}}
-go build -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="" {{.Dir}}/libcgo_{{.Name}}
-go build -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-r {{.Dir}}/" {{.Dir}}/libgo_{{.Name}}
+go build -trimpath -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="-s -w $CGO_LDFLAGS" {{.Dir}}/libcgo_{{.Name}}
+go build -trimpath -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-s -w" {{.Dir}}/libgo_{{.Name}}
 {{else}}
 # Unsupported variant: {{.Variant}}. Falling back to generic.
-go build -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="" {{.Dir}}/libcgo_{{.Name}}
-go build -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-r {{.Dir}}/" {{.Dir}}/libgo_{{.Name}}
+go build -trimpath -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="-s -w $CGO_LDFLAGS" {{.Dir}}/libcgo_{{.Name}}
+go build -trimpath -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-s -w" {{.Dir}}/libgo_{{.Name}}
 {{end}}
 
 # Timestamp suffix for backup artifacts and meta file.
