@@ -29,8 +29,6 @@ if [ -z "$commit_id" ]; then
 	commit_id="unknown"
 fi
 
-LDFLAGS="-extldflags=-Wl,-rpath,'\$ORIGIN'"
-
 {{if eq .Variant "generic"}}
 go build -trimpath -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="-s -w -extldflags=-Wl,-rpath,\$ORIGIN" {{.Dir}}/libcgo_{{.Name}}
 go build -trimpath -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="-s -w -extldflags=-Wl,-rpath,\$ORIGIN" {{.Dir}}/libgo_{{.Name}}
