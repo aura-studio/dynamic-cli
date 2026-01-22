@@ -6,8 +6,8 @@ func init() {
 
 const templateLibgoGo = `package main
 /*
-#cgo CFLAGS: -I{{.Dir}}/
-#cgo LDFLAGS: -L{{.Dir}}/ -lcgo_{{.Name}}
+#cgo CFLAGS: -I${SRCDIR}/
+#cgo LDFLAGS: -L${SRCDIR}/ -lcgo_{{.Name}}
 #include "{{.Dir}}/libcgo_{{.Name}}.h"
 #include "stdlib.h"
 */
