@@ -6,9 +6,8 @@ import (
 	"log"
 	"os"
 	"path"
-	"sync"
-
 	"strings"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -33,9 +32,7 @@ func NewS3Remote(bucket string) *S3Remote {
 	// Normalize to bucket + optional prefix for S3 API usage.
 	b := bucket
 	p := ""
-	if strings.HasPrefix(b, "s3://") {
-		b = strings.TrimPrefix(b, "s3://")
-	}
+	b = strings.TrimPrefix(b, "s3://")
 	if i := strings.IndexByte(b, '/'); i >= 0 {
 		p = strings.Trim(b[i+1:], "/")
 		b = b[:i]
@@ -47,9 +44,32 @@ func NewS3Remote(bucket string) *S3Remote {
 }
 
 func (r *S3Remote) createS3Client() (*s3.Client, error) {
+	// 1. 首先使用默认配置创建一个临时客户端来查询 Bucket 所在的 Region
 	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
-		return nil, fmt.Errorf("failed to create client, %v", err)
+		return nil, fmt.Errorf("failed to load default config, %v", err)
+	}
+
+	tempClient := s3.NewFromConfig(cfg)
+	output, err := tempClient.GetBucketLocation(context.Background(), &s3.GetBucketLocationInput{
+		Bucket: aws.String(r.bucket),
+	})
+
+	if err != nil {
+		// 如果 GetBucketLocation 失败，可能是权限问题，回退到默认配置
+		log.Printf("warning: failed to get bucket location for %s, using default region: %v", r.bucket, err)
+	} else {
+		region := string(output.LocationConstraint)
+		// AWS API 规定：如果 LocationConstraint 为空，则 Bucket 位于 us-east-1
+		if region == "" {
+			region = "us-east-1"
+		}
+		log.Printf("detected bucket %s region: %s", r.bucket, region)
+		// 2. 使用检测到的 Region 重新加载配置
+		cfg, err = config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
+		if err != nil {
+			return nil, fmt.Errorf("failed to load config with region %s, %v", region, err)
+		}
 	}
 
 	return s3.NewFromConfig(cfg), nil
@@ -87,7 +107,7 @@ func (r *S3Remote) uploadFileToS3(remoteFilePath string, localFilePath string) e
 
 func (r *S3Remote) batchUploadFilesToS3(pairs []Pair) error {
 	var wg sync.WaitGroup
-	var errChan = make(chan error, len(pairs))
+	errChan := make(chan error, len(pairs))
 	for _, pair := range pairs {
 		wg.Add(1)
 		go func(pair Pair) {
