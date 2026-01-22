@@ -64,7 +64,6 @@ func (r *S3Remote) createS3Client() (*s3.Client, error) {
 	if region == "" {
 		region = "us-east-1"
 	}
-	log.Printf("detected bucket %s region: %s", r.bucket, region)
 
 	cfg, err = config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
 	if err != nil {
