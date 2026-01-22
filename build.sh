@@ -25,7 +25,9 @@ EOF
 
 install() {
 	echo "Installing github.com/aura-studio/dynamic-cli@${VERSION}"
-	go install "github.com/aura-studio/dynamic-cli@${VERSION}"
+	go build -o dynamic-cli ./
+	echo "Copying dynamic-cli to /usr/local/bin"
+	sudo cp dynamic-cli /usr/local/bin/
 }
 
 docker_build() {
