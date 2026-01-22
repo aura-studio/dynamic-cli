@@ -75,8 +75,32 @@ func (c *Cleaner) cleanPackage() {
 				log.Panic(err)
 			}
 		} else {
-			log.Printf("clean remove %s", dir)
-			if err := os.RemoveAll(dir); err != nil {
+			if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+				if path == dir {
+					return nil
+				}
+				if info.IsDir() {
+					log.Printf("clean remove %s", path)
+					if err := os.RemoveAll(path); err != nil {
+						log.Panic(err)
+					}
+					return filepath.SkipDir
+				}
+				isTarget := false
+				for _, file := range c.Files {
+					if path == file {
+						isTarget = true
+						break
+					}
+				}
+				if !isTarget {
+					log.Printf("clean remove %s", path)
+					if err := os.Remove(path); err != nil {
+						log.Panic(err)
+					}
+				}
+				return nil
+			}); err != nil {
 				log.Panic(err)
 			}
 		}
@@ -84,31 +108,31 @@ func (c *Cleaner) cleanPackage() {
 }
 
 func (c *Cleaner) cleanCache() {
-	for _, dir := range c.Dirs {
-		if _, err := os.Stat(dir); err != nil {
-			if os.IsNotExist(err) {
-				continue
-			} else {
-				log.Panic(err)
-			}
+	if _, err := os.Stat(c.WareHouse); err != nil {
+		if os.IsNotExist(err) {
+			return
 		} else {
-			if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-				if path == dir {
-					return nil
-				}
-				for _, file := range c.Files {
-					if path == file || strings.HasPrefix(path, file+".") {
-						return nil
-					}
-				}
-				log.Printf("clean remove %s", path)
-				if err := os.RemoveAll(path); err != nil {
-					log.Panic(err)
-				}
+			log.Panic(err)
+		}
+	} else {
+		if err := filepath.Walk(c.WareHouse, func(path string, info os.FileInfo, err error) error {
+			if path == c.WareHouse {
 				return nil
-			}); err != nil {
+			}
+			if info.IsDir() {
+				return nil
+			}
+			ext := strings.ToLower(filepath.Ext(path))
+			if ext == ".so" || ext == ".json" {
+				return nil
+			}
+			log.Printf("clean remove %s", path)
+			if err := os.Remove(path); err != nil {
 				log.Panic(err)
 			}
+			return nil
+		}); err != nil {
+			log.Panic(err)
 		}
 	}
 }
