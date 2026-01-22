@@ -13,6 +13,7 @@ const (
 	CleanTypeCache CleanType = iota
 	CleanTypePackage
 	CleanTypeAll
+	CleanTypeUseless
 )
 
 type Cleaner struct {
@@ -33,6 +34,8 @@ func (c *Cleaner) Clean(cleanType CleanType) {
 		c.cleanPackage()
 	case CleanTypeAll:
 		c.cleanAll()
+	case CleanTypeUseless:
+		c.cleanUseless()
 	default:
 		log.Panicf("clean type not found: %d", cleanType)
 	}
@@ -67,71 +70,15 @@ func (c *Cleaner) cleanAll() {
 }
 
 func (c *Cleaner) cleanPackage() {
-	// 1. 清理本次构建目录下的杂质 (保留本次构建的 3 个文件，删除其他所有文件和目录)
-	for _, dir := range c.Dirs {
-		if _, err := os.Stat(dir); err != nil {
-			if os.IsNotExist(err) {
-				continue
-			} else {
-				log.Panic(err)
-			}
-		} else {
-			if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-				if path == dir {
-					return nil
-				}
-				if info.IsDir() {
-					log.Printf("clean remove %s", path)
-					if err := os.RemoveAll(path); err != nil {
-						log.Panic(err)
-					}
-					return filepath.SkipDir
-				}
-				isTarget := false
-				for _, file := range c.Files {
-					if path == file {
-						isTarget = true
-						break
-					}
-				}
-				if !isTarget {
-					log.Printf("clean remove %s", path)
-					if err := os.Remove(path); err != nil {
-						log.Panic(err)
-					}
-				}
-				return nil
-			}); err != nil {
-				log.Panic(err)
-			}
-		}
-	}
-
-	// 2. 清理 WareHouse 下所有历史版本的 so 和 json (不属于本次构建的)
-	// 以及 WareHouse 下所有不是 .so .json 后缀的文件
+	// clean package: 删除所有的 so 和 .json 及其带日期的后缀文件
 	if _, err := os.Stat(c.WareHouse); err == nil {
 		if err := filepath.Walk(c.WareHouse, func(path string, info os.FileInfo, err error) error {
 			if path == c.WareHouse || info.IsDir() {
 				return nil
 			}
-			ext := strings.ToLower(filepath.Ext(path))
-			if ext == ".so" || ext == ".json" {
-				isCurrent := false
-				for _, file := range c.Files {
-					if path == file {
-						isCurrent = true
-						break
-					}
-				}
-				if !isCurrent {
-					log.Printf("clean remove historical artifact %s", path)
-					if err := os.Remove(path); err != nil {
-						log.Panic(err)
-					}
-				}
-			} else {
-				// 清除对应目录下所有不是 .so .json 后缀的文件
-				log.Printf("clean remove non-artifact file %s", path)
+			name := strings.ToLower(info.Name())
+			if strings.Contains(name, ".so") || strings.Contains(name, ".json") {
+				log.Printf("clean remove artifact %s", path)
 				if err := os.Remove(path); err != nil {
 					log.Panic(err)
 				}
@@ -144,6 +91,7 @@ func (c *Cleaner) cleanPackage() {
 }
 
 func (c *Cleaner) cleanCache() {
+	// clean cache: 只保留所有的 so 和 .json 及其带日期的后缀文件
 	if _, err := os.Stat(c.WareHouse); err != nil {
 		if os.IsNotExist(err) {
 			return
@@ -152,13 +100,40 @@ func (c *Cleaner) cleanCache() {
 		}
 	} else {
 		if err := filepath.Walk(c.WareHouse, func(path string, info os.FileInfo, err error) error {
-			if path == c.WareHouse {
+			if path == c.WareHouse || info.IsDir() {
 				return nil
 			}
-			if info.IsDir() {
+			name := strings.ToLower(info.Name())
+			if strings.Contains(name, ".so") || strings.Contains(name, ".json") {
 				return nil
 			}
-			ext := strings.ToLower(filepath.Ext(path))
+			log.Printf("clean remove non-artifact %s", path)
+			if err := os.Remove(path); err != nil {
+				log.Panic(err)
+			}
+			return nil
+		}); err != nil {
+			log.Panic(err)
+		}
+	}
+}
+
+func (c *Cleaner) cleanUseless() {
+	// clean useless: 仅保留无日期后缀的 so 和 json 文件，其他文件都删除
+	if _, err := os.Stat(c.WareHouse); err != nil {
+		if os.IsNotExist(err) {
+			return
+		} else {
+			log.Panic(err)
+		}
+	} else {
+		if err := filepath.Walk(c.WareHouse, func(path string, info os.FileInfo, err error) error {
+			if path == c.WareHouse || info.IsDir() {
+				return nil
+			}
+			name := strings.ToLower(info.Name())
+			ext := filepath.Ext(name)
+			// 检查是否是 .so 或 .json 结尾，且不包含日期后缀
 			if ext == ".so" || ext == ".json" {
 				return nil
 			}
