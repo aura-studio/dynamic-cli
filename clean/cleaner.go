@@ -67,7 +67,7 @@ func (c *Cleaner) cleanAll() {
 }
 
 func (c *Cleaner) cleanPackage() {
-	// 1. 清理本次构建目录下的杂质
+	// 1. 清理本次构建目录下的杂质 (保留本次构建的 3 个文件，删除其他所有文件和目录)
 	for _, dir := range c.Dirs {
 		if _, err := os.Stat(dir); err != nil {
 			if os.IsNotExist(err) {
@@ -108,6 +108,7 @@ func (c *Cleaner) cleanPackage() {
 	}
 
 	// 2. 清理 WareHouse 下所有历史版本的 so 和 json (不属于本次构建的)
+	// 以及 WareHouse 下所有不是 .so .json 后缀的文件
 	if _, err := os.Stat(c.WareHouse); err == nil {
 		if err := filepath.Walk(c.WareHouse, func(path string, info os.FileInfo, err error) error {
 			if path == c.WareHouse || info.IsDir() {
@@ -127,6 +128,12 @@ func (c *Cleaner) cleanPackage() {
 					if err := os.Remove(path); err != nil {
 						log.Panic(err)
 					}
+				}
+			} else {
+				// 清除对应目录下所有不是 .so .json 后缀的文件
+				log.Printf("clean remove non-artifact file %s", path)
+				if err := os.Remove(path); err != nil {
+					log.Panic(err)
 				}
 			}
 			return nil
