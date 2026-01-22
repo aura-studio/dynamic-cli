@@ -44,10 +44,10 @@ func NewS3Remote(bucket string) *S3Remote {
 }
 
 func (r *S3Remote) createS3Client() (*s3.Client, error) {
-	// 1. 首先使用默认配置创建一个临时客户端来查询 Bucket 所在的 Region
-	cfg, err := config.LoadDefaultConfig(context.Background())
+	// 使用 us-east-1 调用 GetBucketLocation API
+	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion("us-east-1"))
 	if err != nil {
-		return nil, fmt.Errorf("failed to load default config, %v", err)
+		return nil, fmt.Errorf("failed to load config, %v", err)
 	}
 
 	tempClient := s3.NewFromConfig(cfg)
@@ -56,20 +56,19 @@ func (r *S3Remote) createS3Client() (*s3.Client, error) {
 	})
 
 	if err != nil {
-		// 如果 GetBucketLocation 失败，可能是权限问题，回退到默认配置
 		log.Printf("warning: failed to get bucket location for %s, using default region: %v", r.bucket, err)
-	} else {
-		region := string(output.LocationConstraint)
-		// AWS API 规定：如果 LocationConstraint 为空，则 Bucket 位于 us-east-1
-		if region == "" {
-			region = "us-east-1"
-		}
-		log.Printf("detected bucket %s region: %s", r.bucket, region)
-		// 2. 使用检测到的 Region 重新加载配置
-		cfg, err = config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
-		if err != nil {
-			return nil, fmt.Errorf("failed to load config with region %s, %v", region, err)
-		}
+		return s3.NewFromConfig(cfg), nil
+	}
+
+	region := string(output.LocationConstraint)
+	if region == "" {
+		region = "us-east-1"
+	}
+	log.Printf("detected bucket %s region: %s", r.bucket, region)
+
+	cfg, err = config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
+	if err != nil {
+		return nil, fmt.Errorf("failed to load config with region %s, %v", region, err)
 	}
 
 	return s3.NewFromConfig(cfg), nil
