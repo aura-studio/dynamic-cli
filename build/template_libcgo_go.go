@@ -11,12 +11,31 @@ const templateLibcgoGo = `package main
 */
 import "C"
 import (
+	"encoding/json"
 	"unsafe"
 
 	src "{{if eq .Package "."}}{{.Module}}{{else}}{{.Module}}/{{.Package}}{{end}}"
 )
 
+// Meta constants injected at build time via -ldflags -X
+var (
+	MetaModulePath string
+	MetaCommitID   string
+	MetaBuildTs    string
+)
+
 var tunnel = src.Tunnel
+
+//export dynamic_cgo_{{.Name}}_meta
+func dynamic_cgo_{{.Name}}_meta() *C.char {
+	meta := map[string]string{
+		"module_path": MetaModulePath,
+		"commit_id":   MetaCommitID,
+		"build_ts":    MetaBuildTs,
+	}
+	data, _ := json.Marshal(meta)
+	return C.CString(string(data))
+}
 
 //export dynamic_cgo_{{.Name}}_init
 func dynamic_cgo_{{.Name}}_init() {

@@ -36,8 +36,8 @@ fi
 meta_build_ts=$(TZ='Asia/Shanghai' date "+%Y-%m-%d %H:%M:%S CST%z")
 
 # ldflags for injecting meta constants
-cgo_ldflags="-s -w -extldflags=-Wl,-rpath,\$ORIGIN"
-go_ldflags="-s -w -extldflags=-Wl,-rpath,\$ORIGIN -X 'main.MetaModulePath=$meta_module_path' -X 'main.MetaCommitID=$meta_commit_id' -X 'main.MetaBuildTs=$meta_build_ts'"
+cgo_ldflags="-s -w -extldflags=-Wl,-rpath,\$ORIGIN -X 'main.MetaModulePath=$meta_module_path' -X 'main.MetaCommitID=$meta_commit_id' -X 'main.MetaBuildTs=$meta_build_ts'"
+go_ldflags="-s -w -extldflags=-Wl,-rpath,\$ORIGIN"
 
 {{if eq .Variant "generic"}}
 go build -trimpath -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="$cgo_ldflags" {{.Dir}}/libcgo_{{.Name}}
