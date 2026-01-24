@@ -30,21 +30,4 @@ go build -trimpath -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-
 go build -trimpath -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="$go_ldflags" {{.Dir}}/libgo_{{.Name}}
 cp -rf {{.Dir}}/libgo_{{.Name}}.so {{.Dir}}/libgo_{{.Name}}.so.$meta_built
 cp -rf {{.Dir}}/libcgo_{{.Name}}.so {{.Dir}}/libcgo_{{.Name}}.so.$meta_built
-
-# Generate meta file for this libcgo/libgo pair (for backward compatibility).
-meta={{.Dir}}/meta_{{.Name}}.json
-cat > "$meta" <<EOF
-{
-  "module": "$meta_module",
-  "version": "$meta_version",
-  "built": "$meta_built",
-  "os": "$meta_os",
-  "arch": "$meta_arch",
-  "compiler": "$meta_compiler",
-  "variant": "$meta_variant"
-}
-EOF
-
-# Backup meta file with the same timestamp suffix.
-cp -rf "$meta" "$meta.$meta_built"
 `
