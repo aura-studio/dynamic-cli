@@ -12,9 +12,29 @@ const templateLibgoGo = `package main
 #include "stdlib.h"
 */
 import "C"
-import "unsafe"
+import (
+	"encoding/json"
+	"unsafe"
+)
+
+// Meta constants injected at build time via -ldflags -X
+var (
+	MetaModulePath string
+	MetaCommitID   string
+	MetaBuildTs    string
+)
 
 type tunnel struct{}
+
+func (t tunnel) Meta() string {
+	meta := map[string]string{
+		"module_path": MetaModulePath,
+		"commit_id":   MetaCommitID,
+		"build_ts":    MetaBuildTs,
+	}
+	data, _ := json.Marshal(meta)
+	return string(data)
+}
 
 func (t tunnel) Init() {
 	C.dynamic_cgo_{{.Name}}_init()
