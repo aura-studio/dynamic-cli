@@ -50,7 +50,7 @@ cp -rf {{.Dir}}/libcgo_{{.Name}}.so {{.Dir}}/libcgo_{{.Name}}.so.$ts
 meta={{.Dir}}/meta_{{.Name}}.json
 cat > "$meta" <<EOF
 {
-  "repo": "{{.Module}}",
+  "module": "{{.Module}}",
   "commit_id": "$commit_id",
   "build_time": "$ts"
 }
