@@ -57,13 +57,13 @@ func ReadNm(soPath string) (map[string]string, error) {
 	}
 
 	symbols := []string{
-		"main.MetaModule",
-		"main.MetaVersion",
-		"main.MetaBuilt",
-		"main.MetaOS",
-		"main.MetaArch",
-		"main.MetaCompiler",
-		"main.MetaVariant",
+		"main.MetaSourceModule",
+		"main.MetaSourceVersion",
+		"main.MetaSourceBuilt",
+		"main.MetaToolchainOS",
+		"main.MetaToolchainArch",
+		"main.MetaToolchainCompiler",
+		"main.MetaToolchainVariant",
 	}
 
 	lines := strings.Split(string(out), "\n")

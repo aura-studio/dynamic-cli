@@ -14,20 +14,22 @@ export GOPRIVATE={{.Module}}
 go clean --modcache
 go mod tidy
 
-# Meta variables
-meta_module="{{.Module}}"
-meta_version=$(go list -m -f '{{"{{"}}.Version{{"}}"}}' "$meta_module" 2>/dev/null || echo "unknown")
-meta_built=$(TZ='Asia/Shanghai' date '+%Y-%m-%d_%H:%M:%S_CST+0800')
-meta_os="{{.OS}}"
-meta_arch="{{.Arch}}"
-meta_compiler="{{.Compiler}}"
-meta_variant="{{.Variant}}"
+# Meta variables - source
+meta_source_module="{{.Module}}"
+meta_source_version=$(go list -m -f '{{"{{"}}.Version{{"}}"}}' "$meta_source_module" 2>/dev/null || echo "unknown")
+meta_source_built=$(TZ='Asia/Shanghai' date '+%Y-%m-%d_%H:%M:%S_CST+0800')
+
+# Meta variables - toolchain
+meta_toolchain_os="{{.OS}}"
+meta_toolchain_arch="{{.Arch}}"
+meta_toolchain_compiler="{{.Compiler}}"
+meta_toolchain_variant="{{.Variant}}"
 
 # Build shared library with CGO enabled.
-cgo_ldflags="-s -w -extldflags=-Wl,-rpath,\$ORIGIN -X 'main.MetaModule=$meta_module' -X 'main.MetaVersion=$meta_version' -X 'main.MetaBuilt=$meta_built' -X 'main.MetaOS=$meta_os' -X 'main.MetaArch=$meta_arch' -X 'main.MetaCompiler=$meta_compiler' -X 'main.MetaVariant=$meta_variant'"
+cgo_ldflags="-s -w -extldflags=-Wl,-rpath,\$ORIGIN -X 'main.MetaSourceModule=$meta_source_module' -X 'main.MetaSourceVersion=$meta_source_version' -X 'main.MetaSourceBuilt=$meta_source_built' -X 'main.MetaToolchainOS=$meta_toolchain_os' -X 'main.MetaToolchainArch=$meta_toolchain_arch' -X 'main.MetaToolchainCompiler=$meta_toolchain_compiler' -X 'main.MetaToolchainVariant=$meta_toolchain_variant'"
 go_ldflags="-s -w -extldflags=-Wl,-rpath,\$ORIGIN"
 go build -trimpath -o {{.Dir}}/libcgo_{{.Name}}.so -buildvcs=false -buildmode=c-shared -ldflags="$cgo_ldflags" {{.Dir}}/libcgo_{{.Name}}
 go build -trimpath -o {{.Dir}}/libgo_{{.Name}}.so -buildvcs=false -buildmode=plugin -ldflags="$go_ldflags" {{.Dir}}/libgo_{{.Name}}
-cp -rf {{.Dir}}/libgo_{{.Name}}.so {{.Dir}}/libgo_{{.Name}}.so.$meta_built
-cp -rf {{.Dir}}/libcgo_{{.Name}}.so {{.Dir}}/libcgo_{{.Name}}.so.$meta_built
+cp -rf {{.Dir}}/libgo_{{.Name}}.so {{.Dir}}/libgo_{{.Name}}.so.$meta_source_built
+cp -rf {{.Dir}}/libcgo_{{.Name}}.so {{.Dir}}/libcgo_{{.Name}}.so.$meta_source_built
 `

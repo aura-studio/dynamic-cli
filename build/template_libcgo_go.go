@@ -19,27 +19,31 @@ import (
 
 // Meta constants injected at build time via -ldflags -X
 var (
-	MetaModule   string
-	MetaVersion  string
-	MetaBuilt    string
-	MetaOS       string
-	MetaArch     string
-	MetaCompiler string
-	MetaVariant  string
+	MetaSourceModule   string
+	MetaSourceVersion  string
+	MetaSourceBuilt    string
+	MetaToolchainOS       string
+	MetaToolchainArch     string
+	MetaToolchainCompiler string
+	MetaToolchainVariant  string
 )
 
 var tunnel = src.Tunnel
 
 //export dynamic_cgo_{{.Name}}_meta
 func dynamic_cgo_{{.Name}}_meta() *C.char {
-	meta := map[string]string{
-		"module":   MetaModule,
-		"version":  MetaVersion,
-		"built":    MetaBuilt,
-		"os":       MetaOS,
-		"arch":     MetaArch,
-		"compiler": MetaCompiler,
-		"variant":  MetaVariant,
+	meta := map[string]interface{}{
+		"source": map[string]string{
+			"module":  MetaSourceModule,
+			"version": MetaSourceVersion,
+			"built":   MetaSourceBuilt,
+		},
+		"toolchain": map[string]string{
+			"os":       MetaToolchainOS,
+			"arch":     MetaToolchainArch,
+			"compiler": MetaToolchainCompiler,
+			"variant":  MetaToolchainVariant,
+		},
 	}
 	data, _ := json.MarshalIndent(meta, "", "  ")
 	return C.CString(string(data))

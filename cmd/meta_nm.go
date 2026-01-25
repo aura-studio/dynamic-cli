@@ -14,20 +14,20 @@ var metaNmCmd = &cobra.Command{
 	Long: `Use 'go tool nm' to locate Meta symbol addresses in the .so file.
 
 This method lists symbol table entries and filters for the injected Meta 
-variables (MetaModule, MetaVersion, MetaBuilt, etc.). It shows the memory
+variables (MetaSourceModule, MetaSourceVersion, MetaSourceBuilt, etc.). It shows the memory
 address and type of each symbol, confirming they exist in the binary.
 
 Note: This method shows symbol presence and addresses but cannot directly
 extract the string values. Use 'strings' or 'call' method for actual values.
 
 Symbol names searched:
-  main.MetaModule
-  main.MetaVersion
-  main.MetaBuilt
-  main.MetaOS
-  main.MetaArch
-  main.MetaCompiler
-  main.MetaVariant
+  main.MetaSourceModule
+  main.MetaSourceVersion
+  main.MetaSourceBuilt
+  main.MetaToolchainOS
+  main.MetaToolchainArch
+  main.MetaToolchainCompiler
+  main.MetaToolchainVariant
 
 Example:
   dynamic meta nm libcgo_xxx.so`,
@@ -52,13 +52,13 @@ Example:
 
 		fmt.Println("Meta symbols found:")
 		symbols := []string{
-			"main.MetaModule",
-			"main.MetaVersion",
-			"main.MetaBuilt",
-			"main.MetaOS",
-			"main.MetaArch",
-			"main.MetaCompiler",
-			"main.MetaVariant",
+			"main.MetaSourceModule",
+			"main.MetaSourceVersion",
+			"main.MetaSourceBuilt",
+			"main.MetaToolchainOS",
+			"main.MetaToolchainArch",
+			"main.MetaToolchainCompiler",
+			"main.MetaToolchainVariant",
 		}
 		for _, sym := range symbols {
 			if info, ok := found[sym]; ok {
