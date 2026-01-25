@@ -17,7 +17,7 @@ go mod tidy
 # Meta variables
 meta_module="{{.Module}}"
 meta_version=$(go list -m -f '{{"{{"}}.Version{{"}}"}}' "$meta_module" 2>/dev/null || echo "unknown")
-meta_built=$(TZ='Asia/Shanghai' date "+%Y-%m-%d_%H:%M:%S_CST%z")
+meta_built=$(TZ='Asia/Shanghai' date '+%Y-%m-%d_%H:%M:%S_CST+0800')
 meta_os="{{.OS}}"
 meta_arch="{{.Arch}}"
 meta_compiler="{{.Compiler}}"
