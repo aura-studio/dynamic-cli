@@ -57,9 +57,9 @@ func ReadNm(soPath string) (map[string]string, error) {
 	}
 
 	symbols := []string{
-		"main.MetaSourceModule",
-		"main.MetaSourceVersion",
-		"main.MetaSourceBuilt",
+		"main.MetaDynamicModule",
+		"main.MetaDynamicVersion",
+		"main.MetaDynamicBuilt",
 		"main.MetaToolchainOS",
 		"main.MetaToolchainArch",
 		"main.MetaToolchainCompiler",
