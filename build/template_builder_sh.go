@@ -17,7 +17,7 @@ go mod tidy
 # Meta variables - dynamic
 meta_dynamic_module="{{.Module}}"
 meta_dynamic_version=$(go list -m -f '{{"{{"}}.Version{{"}}"}}' "$meta_dynamic_module" 2>/dev/null || echo "unknown")
-meta_dynamic_built=$(TZ='Asia/Shanghai' date '+%Y-%m-%d_%H:%M:%S_CST+0800')
+meta_dynamic_built=$(TZ=Asia/Shanghai date '+%Y-%m-%d_%H:%M:%S_%Z%z')
 
 # Meta variables - toolchain
 meta_toolchain_os="{{.OS}}"
